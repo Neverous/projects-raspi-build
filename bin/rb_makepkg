@@ -1,0 +1,3 @@
+#!/bin/bash
+
+rb_makepkg.patched --config ${RB_CONFDIR}/makepkg.conf -d $@

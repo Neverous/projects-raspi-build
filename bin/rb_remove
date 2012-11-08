@@ -1,0 +1,3 @@
+#!/bin/bash
+
+sudo pacman --arch ${RB_TARGET_ARCH} -r ${RB_TARGETDIR} -Rnsc $@
