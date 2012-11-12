@@ -12,13 +12,13 @@ Well, I started this "project" when there only was armv5 image from [Arch Linux 
 2. You may want to edit some config files in `config/` directory.
     * customize `RB_*` in `host.conf`
 3. Run `. bin/activate` to enable special variables, custom scripts etc.
-4. Install [crosstool-ng](http://crosstool-ng.org/)
+4. Install [crosstool-NG](http://crosstool-ng.org/)
     * Preferably `./configure --prefix ${RB_WORKDIR}/host`
 5. Install [scratchbox2](http://maemo.gitorious.org/scratchbox2/scratchbox2)
     * Preferably `./configure --prefix ${RB_WORKDIR}/host`
 
 ### 2. Prepare target sysroot
-1. Build sysroot with crosstool-ng (there is example config I use in `config/`)
+1. Build sysroot with crosstool-NG (there is example config I use in `config/`)
     * `ct-ng menuconfig` - to configure
     * `ct-ng build` - to build
 2. Initialize scratchbox2 directory
@@ -30,6 +30,7 @@ Well, I started this "project" when there only was armv5 image from [Arch Linux 
         * `gcc.config.sh`
             * `SBOX_EXTRA_CROSSCOMPILER_FLAGS` += `-L@SBOX_TARGET_ROOT@/opt/vc/lib -I@SBOX_TARGET_ROOT@/opt/vc/include -I@SBOX_TARGET_ROOT@/opt/vc/include/interface/vcos/pthreads`
     * Adjust scratchbox2 mapping in `${RB_WORKDIR}/host/share/scratchbox2/lua_scripts/pathmaps/simple/00_default.lua`:
+
 ```diff
  -- -----------------------------------------------
  -- 99. Other rules.
@@ -54,7 +55,7 @@ Well, I started this "project" when there only was armv5 image from [Arch Linux 
 +               {prefix = "/usr/bin/python2", map_to = target_root},
 +               {prefix = "/opt", map_to = target_root},
 ```
-3. Adjust sysroot created by crosstool-ng
+3. Adjust sysroot created by crosstool-NG
     * change permissions in `${RB_TARGETDIR}/*` to `root:root` `755` (recursive)
     * move `${RB_TARGETDIR}/lib` to `${RB_TARGETDIR}/usr/lib` and symlink(`ln -s`) `lib` to `usr/lib` - its default on Arch Linux
     * create `${RB_TARGETDIR}/var/lib/pacman/` directory
