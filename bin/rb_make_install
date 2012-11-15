@@ -1,0 +1,2 @@
+#!/bin/bash
+rb_makepkg && rb_install *.pkg.*
