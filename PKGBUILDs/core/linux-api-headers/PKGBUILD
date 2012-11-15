@@ -1,0 +1,42 @@
+# $Id: PKGBUILD 169772 2012-10-28 11:11:51Z allan $
+# Maintainer: Allan McRae <allan@archlinux.org>
+
+# toolchain build order: linux-api-headers->glibc->binutils->gcc->binutils->glibc
+
+# Raspi-Build: Maciej Szeptuch <neverous@neverous.info>
+# - changed kernel for raspberrypi supported one 3.2.27
+
+pkgname=linux-api-headers
+pkgver=3.2.27
+_basever=3.2
+pkgrel=1
+pkgdesc="Kernel headers sanitized for use in userspace"
+arch=('i686' 'x86_64' 'armv6zk')
+url="http://www.gnu.org/software/libc"
+license=('GPL2')
+source=(http://www.kernel.org/pub/linux/kernel/v3.x/linux-${_basever}.tar.xz
+        http://www.kernel.org/pub/linux/kernel/v3.x/patch-${pkgver}.xz)
+        # NOTE: signatures are not automatically verified by makepkg
+        #http://www.kernel.org/pub/linux/kernel/v3.x/linux-${_basever}.tar.sign
+        #http://www.kernel.org/pub/linux/kernel/v3.x/patch-${pkgver}.sign
+md5sums=('364066fa18767ec0ae5f4e4abcf9dc51'
+         'f15a72898166e43b94ee91dbac7feb92')
+
+build() {
+  cd ${srcdir}/linux-${_basever}
+  [[ $pkgver != $_basever ]] && patch -p1 -i ${srcdir}/patch-${pkgver}
+
+  make mrproper
+  make headers_check
+}
+
+package() {
+  cd ${srcdir}/linux-${_basever}
+  make INSTALL_HDR_PATH=${pkgdir}/usr headers_install
+
+  # use headers from libdrm
+  rm -r ${pkgdir}/usr/include/drm
+  
+  # clean-up unnecessary files generated during install
+  find ${pkgdir} \( -name .install -o -name ..install.cmd \) -delete
+}

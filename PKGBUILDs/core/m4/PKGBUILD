@@ -1,0 +1,44 @@
+# $Id: PKGBUILD 142068 2011-11-04 23:36:00Z allan $
+# Maintainer: Allan McRae <allan@archlinux.org>
+# Contributor: Andreas Radke <andyrtr@archlinux.org>
+# Raspi Build: Maciej Szeptuch <neverous@neverous.info>
+# - support for building with scratchbox2
+# - patch for undeclared gets
+
+pkgname=m4
+pkgver=1.4.16
+pkgrel=2
+pkgdesc="The GNU macro processor"
+arch=('i686' 'x86_64' 'armv6zk')
+url="http://www.gnu.org/software/m4"
+license=('GPL3')
+groups=('base-devel')
+depends=('glibc' 'bash')
+install=m4.install
+source=(ftp://ftp.gnu.org/gnu/m4/$pkgname-$pkgver.tar.xz{,.sig}
+        m4-1.4.16-readlink-einval.patch
+        gets.patch)
+md5sums=('7548ec061a1ba993790159764f522d0e'
+         'eebe5c94e74e7551e2e30c5844f1b653'
+         'cea138fa9b568d06e46269611cec8dd0'
+         '75c9beeae739cce24e326f3237f426f2')
+
+build() {
+  export gl_cv_func_printf_enomem=no
+  export ac_cv_have_decl_gets_unlocked=yes
+  cd ${srcdir}/$pkgname-$pkgver
+  patch -Np1 -i $srcdir/gets.patch
+  patch -Np1 -i $srcdir/m4-1.4.16-readlink-einval.patch
+  ./configure --prefix=/usr
+  make
+}
+
+check() {
+  cd ${srcdir}/$pkgname-$pkgver
+  make check
+}
+
+package() {
+  cd ${srcdir}/$pkgname-$pkgver
+  make prefix=${pkgdir}/usr install
+}

@@ -1,0 +1,45 @@
+# $Id: PKGBUILD 142080 2011-11-04 23:36:17Z allan $
+# Maintainer: Allan McRae <allan@archlinux.org>
+# Contributor: Andreas Radke <andyrtr@archlinux.org>
+# Raspi Build: Maciej Szeptuch <neverous@neverous.info>
+# - fix for missing gets
+# - force configure because of fakeroot/scratchbox2
+
+pkgname=tar
+pkgver=1.26
+pkgrel=2
+pkgdesc="Utility used to store, backup, and transport files"
+arch=('i686' 'x86_64' 'armv6zk')
+url="http://www.gnu.org/software/tar/tar.html"
+license=('GPL3')
+groups=('base')
+depends=('glibc' 'sh')
+options=('!emptydirs')
+install=tar.install
+source=(ftp://ftp.gnu.org/gnu/$pkgname/$pkgname-$pkgver.tar.xz{,.sig}
+        tar.1
+        gets.patch)
+md5sums=('0ced6f20b9fa1bea588005b5ad4b52c1'
+         '6618d5fe7785e138c27d7d6a24e998b2'
+         'e97e7343f4e23724b4c48bca2f033e38'
+         'e769026ba8b3b45af66bb5ed2d6e0957')
+
+build() {
+  cd ${srcdir}/$pkgname-$pkgver
+  export FORCE_UNSAFE_CONFIGURE=1
+  patch -Np1 < ${srcdir}/gets.patch
+
+  ./configure --prefix=/usr --libexecdir=/usr/lib/tar --bindir=/bin
+  make
+}
+
+check() {
+  cd ${srcdir}/$pkgname-$pkgver
+  make check
+}
+  
+package() {
+  cd ${srcdir}/$pkgname-$pkgver
+  make DESTDIR=${pkgdir} install
+  install -Dm644 ${srcdir}/tar.1 ${pkgdir}/usr/share/man/man1/tar.1
+}
