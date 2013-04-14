@@ -326,7 +326,7 @@ Well, I started this "project" when there only was armv5 image from [Arch Linux 
 * extra/lcms
 * extra/fcgi
 * extra/screen
-* community/phppgadmin
+* aur/phppgadmin-git
 * extra/fribidi
 * extra/recode
 * extra/enca
@@ -393,3 +393,4 @@ Well, I started this "project" when there only was armv5 image from [Arch Linux 
 * extra/docbook-xsl
 * community/asciidoc
 * aur/cgit-git
+* core/which
