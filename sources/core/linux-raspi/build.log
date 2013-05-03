@@ -1,0 +1,89 @@
+==> Tworzę pakiet: linux-raspi 3.8.1-21 (pią, 3 maj 2013, 13:11:09 CEST)
+==> OSTRZEŻENIE: Pomijam sprawdzanie zależności.
+==> Retrieving sources...
+  -> Znaleziono config
+  -> Znaleziono change-default-console-loglevel.patch
+  -> Znaleziono usb-add-reset-resume-quirk-for-several-webcams.patch
+  -> Znaleziono args-uncompressed.txt
+  -> Znaleziono boot-uncompressed.txt
+  -> Znaleziono imagetool-uncompressed.py
+  -> Znaleziono linux-raspi.tar.gz
+  -> Znaleziono htc_9271.fw
+  -> Znaleziono fbcondecor-0.9.6-3.0-rc2.patch
+==> Sprawdzam pliki źródłowe przy użyciu md5sums...
+    config ... Zgadza się
+    change-default-console-loglevel.patch ... Zgadza się
+    usb-add-reset-resume-quirk-for-several-webcams.patch ... Zgadza się
+    args-uncompressed.txt ... Zgadza się
+    boot-uncompressed.txt ... Zgadza się
+    imagetool-uncompressed.py ... Zgadza się
+    linux-raspi.tar.gz ... Zgadza się
+    htc_9271.fw ... Zgadza się
+    fbcondecor-0.9.6-3.0-rc2.patch ... Zgadza się
+==> Tworzę pakiet: linux-raspi 3.8.1-21 (pią, 3 maj 2013, 13:11:11 CEST)
+==> OSTRZEŻENIE: Pomijam sprawdzanie zależności.
+==> Retrieving sources...
+  -> Znaleziono config
+  -> Znaleziono change-default-console-loglevel.patch
+  -> Znaleziono usb-add-reset-resume-quirk-for-several-webcams.patch
+  -> Znaleziono args-uncompressed.txt
+  -> Znaleziono boot-uncompressed.txt
+  -> Znaleziono imagetool-uncompressed.py
+  -> Znaleziono linux-raspi.tar.gz
+  -> Znaleziono htc_9271.fw
+  -> Znaleziono fbcondecor-0.9.6-3.0-rc2.patch
+==> Sprawdzam pliki źródłowe przy użyciu md5sums...
+    config ... Zgadza się
+    change-default-console-loglevel.patch ... Zgadza się
+    usb-add-reset-resume-quirk-for-several-webcams.patch ... Zgadza się
+    args-uncompressed.txt ... Zgadza się
+    boot-uncompressed.txt ... Zgadza się
+    imagetool-uncompressed.py ... Zgadza się
+    linux-raspi.tar.gz ... Zgadza się
+    htc_9271.fw ... Zgadza się
+    fbcondecor-0.9.6-3.0-rc2.patch ... Zgadza się
+==> Extracting sources...
+  -> Rozpakowywanie linux-raspi.tar.gz za pomocą bsdtar
+==> Wchodzę do środowiska scratchbox2...
+==> Zaczynam build()
+patching file drivers/usb/core/quirks.c
+Hunk #1 succeeded at 64 with fuzz 2 (offset 26 lines).
+Hunk #2 succeeded at 126 with fuzz 2 (offset 39 lines).
+patching file drivers/usb/core/quirks.c
+Hunk #1 succeeded at 70 (offset 26 lines).
+patching file drivers/usb/core/quirks.c
+Hunk #1 succeeded at 76 (offset 26 lines).
+patching file kernel/printk.c
+Hunk #1 succeeded at 60 (offset 2 lines).
+  HOSTCC  scripts/basic/fixdep
+  SHIPPED scripts/kconfig/zconf.lex.c
+  HOSTCC  scripts/kconfig/conf.o
+  SHIPPED scripts/kconfig/zconf.tab.c
+  SHIPPED scripts/kconfig/zconf.hash.c
+  HOSTCC  scripts/kconfig/zconf.tab.o
+  HOSTLD  scripts/kconfig/conf
+scripts/kconfig/conf --silentoldconfig Kconfig
+*
+* Restart config...
+*
+*
+* General setup
+*
+Prompt for development and/or incomplete code/drivers (EXPERIMENTAL) [Y/n/?] y
+Cross-compiler tool prefix (CROSS_COMPILE) [] 
+Local version - append to kernel release (LOCALVERSION) [-RASPI] -RASPI
+Automatically append version information to the version string (LOCALVERSION_AUTO) [N/y/?] n
+Kernel compression mode
+  1. Gzip (KERNEL_GZIP)
+> 2. LZMA (KERNEL_LZMA)
+  3. XZ (KERNEL_XZ) (NEW)
+  4. LZO (KERNEL_LZO)
+choice[1-4?]: aborted!
+
+Console input/output is redirected. Run 'make oldconfig' to update configuration.
+
+make[2]: *** [silentoldconfig] Błąd 1
+make[1]: *** [silentoldconfig] Błąd 2
+make: *** Brak reguł do zrobienia obiektu `include/config/auto.conf', wymaganego przez `include/config/kernel.release'. Stop.
+==> BŁĄD: Wystąpił błąd w build().
+    Przerywam...

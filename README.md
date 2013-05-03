@@ -12,7 +12,7 @@ Well, I started this "project" when there only was armv5 image from [Arch Linux 
 * You may want to edit some config files in `config/` directory.
     * customize `RB_*` in `host.conf`
 * Run `. bin/activate` to enable special variables, custom scripts etc.
-* Install [crosstool-NG](http://crosstool-ng.org/)
+* Install [crosstool-NG](http://crosstool-ng.org/) or Linaro fork [crosstool-NG](http://code.launchpad.net/~linaro-toolchain-dev/crosstool-ng/linaro)
     * Preferably `./configure --prefix ${RB_WORKDIR}/host`
 * Install [scratchbox2](http://maemo.gitorious.org/scratchbox2/scratchbox2)
     * Preferably `./configure --prefix ${RB_WORKDIR}/host`
@@ -29,7 +29,6 @@ Well, I started this "project" when there only was armv5 image from [Arch Linux 
             * `extra_cross_ld_args` += `:@SBOX_TARGET_ROOT@/opt/vc/lib`
         * `gcc.config.sh`
             * `SBOX_EXTRA_CROSSCOMPILER_ARGS` += `-L@SBOX_TARGET_ROOT@/opt/vc/lib -I@SBOX_TARGET_ROOT@/opt/vc/include -I@SBOX_TARGET_ROOT@/opt/vc/include/interface/vcos/pthreads`
-    * Create `rpi.conf` file in `/etc/ld.conf.d/` with `/opt/vc/lib`
     * Adjust scratchbox2 mapping in `${RB_WORKDIR}/host/share/scratchbox2/lua_scripts/pathmaps/simple/00_default.lua`:
 
 ```diff
@@ -40,7 +39,7 @@ Well, I started this "project" when there only was armv5 image from [Arch Linux 
                 {prefix = "/usr/lib/pymodules", use_orig_path = true, readonly = true},
                 {prefix = "/usr/lib/pyshared", use_orig_path = true, readonly = true},
                 {prefix = "/usr/lib/python", use_orig_path = true, readonly = true},
-+               -- Change upper python binings to this after compiling python
++               -- Change upper python binings to this before compiling python
 +               --{prefix = "/usr/bin/python", map_to = target_root},
 +               --{prefix = "/usr/bin/python2", map_to = target_root},
                 {prefix = "/usr/lib/perl", map_to = tools},
@@ -53,18 +52,20 @@ Well, I started this "project" when there only was armv5 image from [Arch Linux 
 ```
 
 * Adjust sysroot created by crosstool-NG
-    * change permissions in `${RB_TARGETDIR}/*` to `root:root` `755` (recursive)
     * move `${RB_TARGETDIR}/lib` to `${RB_TARGETDIR}/usr/lib` and symlink(`ln -s`) `lib` to `usr/lib` - its default on Arch Linux
+    * copy `${RB_READYDIR}/${RB_TARGET_HOST}/lib/*` to `${RB_TARGETDIR}/usr/lib` - missing c++ libraries
     * create `${RB_TARGETDIR}/var/lib/pacman/` directory
+    * change permissions in `${RB_TARGETDIR}/*` to `root:root` `755` (recursive)
 
 ### 3. Build packages
 * I'm getting PKGBUILDs from [ABS](http://wiki.archlinux.org/index.php/Arch_Build_System) or [Arch Linux ARM repo](http://github.com/archlinuxarm/PKGBUILDs) or [AUR](http://aur.archlinux.org/)
-* Ones that I adjusted a bit are in `PKGBUILDs/` directory
+* There is `rb\_autobuild` script that tries to automate part of the build **EXPERIMENTAL**
+* Ones adjusted and prepared for `rb\_autobuild` are in `PKGBUILDs/` directory
 * Use `rb_makepkg` instead of `makepkg` - it has patched support for scratchbox2 instead of fakeroot and uses `makepkg.conf` from `config/`
 
 #### PACKAGE BUILDING ORDER:
 * alarm/raspberrypi-firmware
-* core/linux-api-headers (**build and force-install**)
+* core/linux-api-headers (**force-install**)
 * core/tzdata
 * core/iana-etc
 * core/glibc (**force-install**)
@@ -78,7 +79,6 @@ Well, I started this "project" when there only was armv5 image from [Arch Linux 
 * core/gmp (**force-install**)
 * core/mpfr
 * core/libmpc
-* core/ppl
 * core/isl
 * core/cloog
 * core/zlib
@@ -93,13 +93,12 @@ Well, I started this "project" when there only was armv5 image from [Arch Linux 
 * core/flex
 * core/pam
 * core/coreutils
-* core/nss-myhostname
 * core/filesystem
 * core/pcre
 * core/xz
 * core/shadow
 * core/util-linux
-* core/kmodo
+* core/kmod
 * core/expat
 * core/hwids
 * extra/sqlite
@@ -116,7 +115,6 @@ Well, I started this "project" when there only was armv5 image from [Arch Linux 
 * core/pkg-config
 * extra/perl-xml-parser
 * extra/intltool
-* core/dbus-core (**force with systemd support disabled**)
 * core/libgpg-error
 * core/libgcrypt
 * core/popt
@@ -136,261 +134,10 @@ Well, I started this "project" when there only was armv5 image from [Arch Linux 
 * core/diffutils
 * core/autoconf
 * core/automake
+* core/dbus
 * core/systemd (install with udev-oxnas removal)
-* core/dbus-core (**now with systemd support enabled**)
-* core/lvm2 (because of dbus-core)
+* core/lvm2 (because of dbus)
 * core/systemd (also)
+* core/dbus (because of systemd)
 * alarm/uboot-mkimage
 * core/linux-raspi
-* community/openntpd
-* core/wireless\_tools
-* core/libnl
-* core/wpa\_supplicant
-* core/wpa\_actionid
-* core/keyutils
-* core/e2fsprogs
-* core/libedit
-* core/krb5
-* core/dnssec-anchors
-* core/ldns
-* core/openssh
-* core/libssh2
-* core/findutils
-* core/run-parts
-* core/cronie
-* core/ca-certificates
-* core/curl
-* extra/perl-error
-* extra/git
-* extra/cvs
-* community/libdbi
-* core/iptables
-* core/iproute2
-* extra/python-distribute
-* extra/net-snmp
-* community/liboping
-* core/libpcap
-* extra/libxml2
-* core/sysfsutils
-* extra/libpng
-* extra/pixman
-* extra/freetype2
-* extra/fontconfig
-* core/dhcpcd
-* core/net-tools
-* extra/dhclient (from dhcp)
-* extra/xproto
-* extra/renderproto
-* extra/kbproto
-* extra/xcb-proto
-* extra/xextproto
-* extra/inputproto
-* extra/xf86vidmodeproto
-* extra/glproto
-* extra/dri2proto
-* extra/videoproto
-* extra/dmxproto
-* extra/fixesproto
-* extra/damageproto
-* extra/xineramaproto
-* extra/compositeproto
-* extra/xf86dgaproto
-* extra/recordproto
-* extra/randrproto
-* extra/libfontenc
-* extra/xorg-mkfontscale
-* extra/xorg-mkfontdir
-* extra/xorg-fonts-encodings
-* extra/libxslt
-* extra/libxau
-* extra/libxdmcp
-* extra/libxcb
-* extra/xtrans
-* extra/libx11
-* extra/libxrender
-* extra/libice
-* extra/libsm
-* extra/libxt
-* extra/libdatrie
-* extra/libthai
-* extra/libxft
-* extra/libxext
-* extra/libxv
-* extra/cairo
-* extra/ttf-dejavu
-* core/libarchive
-* extra/shared-mime-info
-* extra/cmake
-* extra/yajl
-* extra/icu
-* extra/harfbuzz
-* extra/pango
-* extra/rrdtool
-* extra/lm\_sensors
-* extra/libdaemon
-* extra/dbus-glib
-* extra/dbus-python
-* extra/dbus
-* extra/avahi
-* community/distcc
-* extra/collectd
-* core/pacman-mirrorlist
-* core/pth
-* core/libksba
-* core/libassuan
-* core/pinentry
-* core/gnupg
-* core/gpgme
-* core/pacman
-* core/netcfg
-* extra/bluez
-* core/gpm
-* core/vi
-* extra/vim
-* community/nginx
-* extra/aspell
-* extra/hunspell
-* extra/hspell
-* extra/enchant
-* extra/libjpeg-turbo
-* extra/libmcrypt
-* extra/libzip
-* extra/libvpx
-* extra/unixodbc
-* extra/imap
-* core/file
-* extra/tidyhtml
-* extra/postgresql
-* extra/php (with extensions)
-* community/python2-cherrypy
-* community/python2-progressbar
-* community/python2-beautifulsoup3
-* extra/python2-markupsafe
-* community/python2-jinja
-* community/python2-werkzeug
-* community/python2-dateutil
-* community/python2-flask
-* community/libyaml
-* community/python2-yaml
-* community/python2-sqlalchemy
-* extra/python2-feedparser
-* extra/python2-chardet
-* aur/python2-pynzb
-* aur/pyrss2gen
-* aur/python2-certifi
-* community/python2-beautifulsoup4
-* community/python2-html5lib
-* aur/python2-requests
-* aur/flexget
-* aur/xmlrpc-c-svn
-* extra/libsigc++2
-* community/libtorrent
-* community/rtorrent
-* extra/rsync
-* community/libestr
-* community/libee
-* core/gzip
-* core/texinfo
-* extra/libtasn1
-* extra/nettle
-* extra/p11-kit
-* extra/gnutls
-* community/rsyslog
-* extra/eventlog
-* core/procps-ng
-* core/iw
-* extra/swig
-* core/wireless-regdb
-* core/grep
-* core/less
-* core/make
-* core/inetutils
-* core/idnkit
-* core/dnsutils
-* core/iputils
-* core/patch
-* core/usbutils
-* core/rpcbind
-* extra/libidn
-* extra/wget
-* core/sudo
-* core/librpcsecgss
-* community/pdnsd
-* extra/htop
-* community/iperf
-* core/nfsidmap
-* core/libevent
-* core/nfs-utils
-* extra/libmng
-* extra/libtiff
-* extra/lcms
-* extra/fcgi
-* extra/screen
-* aur/phppgadmin-git
-* extra/fribidi
-* extra/recode
-* extra/enca
-* extra/libass
-* extra/zip
-* extra/nasm
-* extra/gperf
-* extra/tinyxml
-* extra/libxmu
-* extra/libxxf86vm
-* extra/libxi
-* extra/llvm
-* extra/imake
-* extra/lzo
-* core/lzo2
-* extra/libssh
-* extra/unzip
-* core/psmisc
-* extra/lua
-* extra/libxfixes
-* extra/libxdamage
-* extra/libpciaccess
-* extra/libdrm
-* extra/mesa
-* extra/glu
-* extra/libxrandr
-* extra/freeglut
-* extra/jasper
-* extra/libmodplug
-* extra/rtmpdump
-* extra/sdl
-* extra/libmpeg2
-* community/libmicrohttpd
-* extra/libogg
-* extra/flac
-* extra/libvorbis
-* extra/libdmx
-* extra/libxinerama
-* extra/libxcomposite
-* extra/libxxf86dga
-* extra/libxtst
-* extra/xorg-xdpyinfo
-* extra/hicolor-icon-theme
-* extra/libcddb
-* extra/lame
-* extra/lockdev
-* community/spawn-fcgi
-* community/fcgiwrap
-* aur/libcofi\_rpi-git
-* aur/miscsplashutils
-* aur/fbsplash
-* aur/fbsplash-extras
-* aur/gitolite-git
-* community/python2-m2crypto
-* extra/dosfstools
-* extra/libmad
-* extra/alsa-lib
-* extra/libsndfile
-* extra/libsamplerate
-* extra/libcdio
-* extra/boost
-* extra/zsh
-* extra/docbook-xml
-* extra/docbook-xsl
-* community/asciidoc
-* aur/cgit-git
-* core/which
