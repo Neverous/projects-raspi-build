@@ -1,0 +1,437 @@
+#!/bin/bash
+
+RB_AUTOBUILD_VERBOSE=0
+
+# COLORS
+red=$(tput setaf 1);
+green=$(tput setaf 2);
+yellow=$(tput setaf 3);
+cyan=$(tput setaf 6);
+white=$(tput setaf 7);
+none=$(tput sgr0);
+
+# MAIN
+function main()
+{
+    case $1 in
+        prepare)
+            prepare;
+        ;;
+
+        *|build)
+            build;
+        ;;
+    esac;
+}
+
+function prepare()
+{
+    OLDIFS=$IFS
+    IFS=$(echo -ne "\n\b")
+    count=${#RB_AUTOBUILD_PACKAGES[@]};
+    c=0;
+    for package in ${RB_AUTOBUILD_PACKAGES[@]}; do
+        let c=$c+1;
+        pkgname="${white}${package}${none}";
+        msg_stat " ($c/${count}) Preparing sources for ${pkgname}...";
+        if check_source "${package}"; then
+            msg_done_before;
+            continue;
+        fi;
+
+        diff "${RB_ABSDIR}/${package}" "${RB_ALARMDIR}/${package}";
+        src=""
+        ask_copy;
+        case $? in
+            3)
+                msg_stat " ($c/${count}) Copying sources for ${pkgname} from ABS...";
+                src=${RB_ABSDIR}
+            ;;
+            2)
+                msg_stat " ($c/${count}) Copying sources for ${pkgname} from ALARM...";
+                src=${RB_ALARMDIR}
+            ;;
+            1)
+                msg_skip "Skipping package ${pkgname}.";
+                continue;
+            ;;
+            0)
+                exit 1;
+            ;;
+        esac
+
+        if ! copy_source "${package}" "${src}"; then
+            msg_error "Copying failed!";
+            exit 2;
+        fi;
+
+        msg_done;
+    done;
+
+    IFS=$OLDIFS
+}
+
+function build()
+{
+    OLDIFS=$IFS
+    IFS=$(echo -ne "\n\b")
+    count=${#RB_AUTOBUILD_PACKAGES[@]};
+    c=0;
+    for package in ${RB_AUTOBUILD_PACKAGES[@]}; do
+        let c=$c+1;
+        pkgname="${white}${package}${none}";
+        msg_stat " ($c/${count}) Building package ${pkgname}...";
+        if ! check_source ${package}; then
+            msg_error "Missing source files for ${pkgname}!";
+            exit 2;
+        fi;
+        
+        check_package ${package};
+        case $? in
+            2)
+                msg_skip "Skipping package ${pkgname}.";
+                continue;
+            ;;
+
+            1)
+                msg_done_before;
+                continue;
+            ;;
+        esac;
+
+        if ! download_sources ${package}; then
+            msg_error "Cannot download sources for ${pkgname}!";
+        fi;
+
+        skip=0;
+        while check_package ${package}; do
+            if ! check_build ${package}; then
+                msg_error "Package already built but not installed!";
+                ask_install;
+                case $? in
+                    2)
+                        msg_stat "Installing package ${pkgname}...";
+                        install_package ${package} || exit 1;
+                        msg_done;
+                        break;
+                    ;;
+
+                    1)
+                        msg_stat "Building package ${pkgname}...";
+                    ;;
+
+                    0)
+                        exit 1;
+                    ;;
+                esac;
+            fi;
+
+            if ! prepare_package ${package} || ! build_package ${package} || ! install_package ${package}; then
+                msg_error "Building error!"
+                show_log ${package};
+                echo "Now you have time to fix the package ${package}.";
+                ask_retry;
+                case $? in
+                    2)
+                        msg_stat "Building package ${pkgname}...";
+                        continue;
+                    ;;
+
+                    1)
+                        msg_skip "Skipping package ${pkgname}.";
+                        run ${package} touch "${RB_WORKDIR}/build/${package}/.skipped"                        skip=1;
+                        break;
+                    ;;
+
+                    0)
+                        exit 1;
+                    ;;
+                esac;
+            fi;
+        done;
+
+        if [[ ${skip} != 1 ]]; then
+            msg_done;
+        fi;
+    done;
+
+    IFS=$OLDIFS
+}
+
+# FUNCTIONS
+_prev=""
+function msg_stat()
+{
+    date=$(date +"%Y-%m-%d %H:%M:%S")
+    message="[${date}]$@";
+    let align=$(tput cols)-${#message}+2*${#white}+2*${#none};
+    _prev=$(printf "%s%${align}s" "${message}" "${white}[]${none}");
+    printf "\r%s" "${_prev}";
+}
+
+function msg_done_before()
+{
+    printf "\r%s\b\b\b%s\n" "${_prev}" "${white}[${yellow}B4${white}]${none}";
+}
+
+function msg_skip()
+{
+    date=$(date +"%Y-%m-%d %H:%M:%S")
+    message="[${date}]$@";
+    let align=$(tput cols)-${#message}+3*${#white}+2*${#none}+${#cyan};
+    printf "\r%s%${align}s\n" "${message}" "${white}[${cyan}SK${white}]${none}";
+}
+
+function msg_done()
+{
+    printf "\r%s\b\b\b%s\n" "${_prev}" "${white}[${green}OK${white}]${none}";
+}
+
+function msg_error()
+{
+    date=$(date +"%Y-%m-%d %H:%M:%S")
+    message="[${date}]$@";
+    printf "\r%s\b\b\b%s\n%s\n" "${_prev}" "${white}[${red}ER${white}]${none}" "${message}";
+}
+
+function check_source()
+{
+    src="$@";
+    if [[ -d "${RB_WORKDIR}/src/${src}" ]]; then
+        return 0;
+    fi;
+
+    return 1;
+}
+
+function copy_source()
+{
+    name=$1;
+    src=$2;
+    mkdir -p "${RB_WORKDIR}/src/${name}" || return 1;
+    rmdir "${RB_WORKDIR}/src/${name}" || return 1;
+    cp -r "${src}/${name}" "${RB_WORKDIR}/src/${name}" || return 1;
+    return 0;
+}
+
+function check_package()
+{
+    src="$@";
+    if [[ -f "${RB_WORKDIR}/build/${src}/.skipped" ]]; then
+        return 2;
+    elif [[ -f "${RB_WORKDIR}/build/${src}/.installed" ]]; then
+        return 1;
+    fi;
+
+    return 0;
+}
+
+function check_build()
+{
+    src="$@";
+    if [[ -f "${RB_WORKDIR}/build/${src}/.built" ]]; then
+        return 1;
+    fi;
+
+    return 0;
+}
+
+function run()
+{
+    src="$1";
+    program="${*:2}"
+    if [[ ${RB_AUTOBUILD_VERBOSE} == 1 ]]; then
+        ${program};
+    else
+        ${program} &>> "${RB_WORKDIR}/src/${src}/build.log";
+    fi;
+}
+
+function show_log()
+{
+    src="$@";
+    if [[ -f "${RB_WORKDIR}/src/${src}/build.log" ]]; then
+        cat "${RB_WORKDIR}/src/${src}/build.log";
+    fi;
+}
+
+function ask_copy()
+{
+    response="";
+    while [[ ${response} != "a" && ${response} != "r" && ${response} != "s" && ${response} != "e" ]]; do
+        echo -n "Which one do you want to copy? [${white}A${none}bs/a${white}R${none}m/${white}S${none}kip/${white}E${none}xit] ";
+        read response;
+    done;
+
+    if [[ ${response} = "a" ]]; then
+        return 3;
+
+    elif [[ ${response} = "r" ]]; then
+        return 2;
+    elif [[ ${response} = "s" ]]; then
+        return 1;
+    fi;
+
+    return 0;
+}
+
+function ask_retry()
+{
+    response="";
+    while [[ ${response} != "r" && ${response} != "s" && ${response} != "e" ]]; do
+        echo -n "What you want to do? [${white}R${none}etry/${white}S${none}kip/${white}E${none}xit] ";
+        read response;
+    done;
+
+    if [[ ${response} = "r" ]]; then
+        return 2;
+
+    elif [[ ${response} = "s" ]]; then
+        return 1;
+    fi;
+
+    return 0;
+}
+
+function ask_install()
+{
+    response="";
+    while [[ ${response} != "i" && ${response} != "b" && ${response} != "e" ]]; do
+        echo -n "What you want to do? [${white}I${none}nstall/${white}B${none}uild/${white}E${none}xit] ";
+        read response;
+    done;
+
+    if [[ ${response} = "i" ]]; then
+        return 2;
+
+    elif [[ ${response} = "b" ]]; then
+        return 1;
+    fi;
+
+    return 0;
+}
+
+function prepare_package()
+{
+    src="$@";
+    if [[ -d "${RB_WORKDIR}/build/${src}" ]]; then
+        rm -rf "${RB_WORKDIR}/build/${src}.bak" || return 1;
+        mv "${RB_WORKDIR}/build/${src}" "${RB_WORKDIR}/build/${src}.bak" || return 1;
+    fi;
+
+    mkdir -p "${RB_WORKDIR}/build/${src}" || return 1;
+    ln -s "${RB_WORKDIR}/src/${src}/"* "${RB_WORKDIR}/build/${src}/" || return 1;
+    return 0;
+}
+
+function download_sources()
+{
+    src="$@";
+    rm -f "${RB_WORKDIR}/src/${src}/build.log";
+    run ${src} cd "${RB_WORKDIR}/src/${src}" || return 1;
+    run ${src} rb_clean || return 1;
+    run ${src} rb_makepkg --verifysource || return 1;
+    return 0;
+}
+
+function build_package()
+{
+    src="$@";
+    run ${src} cd "${RB_WORKDIR}/build/${src}" || return 1;
+    run ${src} rb_makepkg || return 1;
+    run ${src} touch .built || return 1;
+    return 0;
+}
+
+function install_package()
+{
+    src="$@";
+    run ${src} cd "${RB_WORKDIR}/build/${src}" || return 1;
+    run ${src} rb_install --noconfirm *.pkg.* || rb_install *.pkg.* || return 1;
+    run ${src} touch .installed || return 1;
+    return 0;
+}
+
+# PACKAGES
+RB_AUTOBUILD_PACKAGES=(
+'alarm/raspberrypi-firmware'
+'core/linux-api-headers'
+'core/tzdata'
+'core/iana-etc'
+'core/glibc'
+'core/attr'
+'core/acl'
+'core/libcap'
+'core/libffi'
+'core/ncurses'
+'core/readline'
+'core/bash'
+'core/gmp'
+'core/mpfr'
+'core/libmpc'
+'core/isl'
+'core/cloog'
+'core/zlib'
+'core/binutils'
+'core/gcc'
+'core/pambase'
+'core/libgssglue'
+'core/libtirpc'
+'core/cracklib'
+'core/db'
+'core/m4'
+'core/flex'
+'core/pam'
+'core/coreutils'
+'core/filesystem'
+'core/pcre'
+'core/xz'
+'core/shadow'
+'core/util-linux'
+'core/kmod'
+'core/expat'
+'core/hwids'
+'extra/sqlite'
+'core/gdbm'
+'Change perl binding in scratchbox2'
+'core/perl'
+'core/openssl'
+'core/bzip2'
+'Change python2 binding in scratchbox2'
+'extra/python2'
+'Change python binding in scratchbox2'
+'extra/python'
+'core/glib2'
+'core/pkg-config'
+'extra/perl-xml-parser'
+'extra/intltool'
+'core/libgpg-error'
+'core/libgcrypt'
+'core/popt'
+'core/libusbx'
+'core/libusb-compat'
+'core/pciutils'
+'core/udev_stage1'
+'core/lvm2_stage1'
+'core/cryptsetup'
+'core/kbd'
+'core/tar'
+'core/sed'
+'core/libtool'
+'Add libtool binding in scratchbox2'
+'core/gawk'
+'extra/libsigsegv'
+'core/diffutils'
+'core/autoconf'
+'core/automake'
+'core/dbus_stage1'
+'core/systemd_stage1'
+'core/lvm2'
+'core/systemd'
+'core/dbus'
+'alarm/uboot-mkimage'
+'core/linux-raspi'
+)
+
+# RUN
+main $@;
