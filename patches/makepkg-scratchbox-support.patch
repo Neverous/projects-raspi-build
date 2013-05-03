@@ -1,0 +1,143 @@
+--- makepkg	2013-04-29 00:55:49.987313033 +0200
++++ rb_makepkg.patched	2012-08-13 16:55:43.788771850 +0200
+@@ -182,12 +181,19 @@ clean_up() {
+ 
+ 
+ enter_fakeroot() {
+-	msg "$(gettext "Entering %s environment...")" "fakeroot"
++	if [[ $(check_buildenv scratchbox) == "y" ]]; then
++		fakeroot="sb2 -R ${SCRATCHBOX_OPTIONS}"
++		name="scratchbox2"
++	else
++		fakeroot="fakeroot"
++		name="fakeroot"
++	fi
+ 
++	msg "$(gettext "Entering %s environment...")" $name
+ 	if [[ -n $newpkgver ]]; then
+-		fakeroot -- $0 --forcever $newpkgver -F "${ARGLIST[@]}" || exit $?
++		$fakeroot -- $0 --forcever $newpkgver -F "${ARGLIST[@]}" || exit $?
+ 	else
+-		fakeroot -- $0 -F "${ARGLIST[@]}" || exit $?
++		$fakeroot -- $0 -F "${ARGLIST[@]}" || exit $?
+ 	fi
+ }
+ 
+@@ -517,15 +523,16 @@ remove_deps() {
+ 
+ 	# check for packages removed during dependency install (e.g. due to conflicts)
+ 	# removing all installed packages is risky in this case
+-	if [[ -n $(grep -xvFf <(printf '%s\n' "${current_packagelist[@]}") \
+-			<(printf '%s\n' "${original_packagelist[@]}") || true) ]]; then
++	export SBOX_DISABLE_MAPPING=1
++	if [[ -n $(printf '%s\n' "${original_packagelist[@]}" | grep -xvF `printf '%s\n' "${current_packagelist[@]}"` || true) ]]; then
+ 		warning "$(gettext "Failed to remove installed dependencies.")"
++		unset SBOX_DISABLE_MAPPING
+ 		return 0
+ 	fi
+ 
+ 	local deplist
+-	deplist=($(grep -xvFf <(printf "%s\n" "${original_pkglist[@]}") \
+-			<(printf "%s\n" "${current_pkglist[@]}") || true))
++	deplist=($(printf '%s\n' "${original_packagelist[@]}" | grep -xvF `printf '%s\n' "${current_packagelist[@]}"` || true))
++	unset SBOX_DISABLE_MAPPING
+ 	if [[ -z $deplist ]]; then
+ 		return
+ 	fi
+@@ -1005,9 +1012,9 @@ tidy_install() {
+ 					# find hard links and remove them
+ 					#   the '|| true' part keeps the script from bailing on the EOF returned
+ 					#   by read at the end of the find output
+-					IFS=$'\n' read -rd '' -a hardlinks < \
+-						<(find ${MAN_DIRS[@]} \! -name "$file" -samefile "$manpage" \
+-								2>/dev/null || true) || true
++					export SBOX_DISABLE_MAPPING=1
++					tmp=`find ${MAN_DIRS[@]} ! -name "$file" -samefile "$manpage" 2>/dev/null || true` 
++					read -rd '' -a hardlinks <<< "$tmp" || true
+ 					rm -f "${hardlinks[@]}"
+ 					# compress the original
+ 					gzip -9 "$manpage"
+@@ -1016,6 +1023,7 @@ tidy_install() {
+ 						ln "${manpage}.gz" "${hl}.gz"
+ 						chmod 644 ${hl}.gz
+ 					done
++					unset SBOX_DISABLE_MAPPING
+ 				fi
+ 			fi
+ 		done
+@@ -1258,7 +1266,8 @@ create_package() {
+ 
+ 	# check for changelog/install files
+ 	for i in 'changelog/.CHANGELOG' 'install/.INSTALL'; do
+-		IFS='/' read -r orig dest < <(printf '%s\n' "$i")
++		tmp=`printf '%s\n' "$i"`
++		IFS='/' read -r orig dest <<< "$tmp"
+ 
+ 		if [[ -n ${!orig} ]]; then
+ 			msg2 "$(gettext "Adding %s file...")" "$orig"
+@@ -1367,6 +1376,7 @@ create_srcpackage() {
+ 	local i
+ 	for i in 'changelog' 'install'; do
+ 		local file
++		sed -n "s/^[[:space:]]*$i=//p" "$BUILDFILE" |
+ 		while read -r file; do
+ 			# evaluate any bash variables used
+ 			eval file=\"$(sed 's/^\(['\''"]\)\(.*\)\1$/\2/' <<< "$file")\"
+@@ -1374,7 +1384,7 @@ create_srcpackage() {
+ 				msg2 "$(gettext "Adding %s file (%s)...")" "$i" "${file}"
+ 				ln -s "${startdir}/$file" "${srclinks}/${pkgbase}/"
+ 			fi
+-		done < <(sed -n "s/^[[:space:]]*$i=//p" "$BUILDFILE")
++		done
+ 	done
+ 
+ 	local TAR_OPT
+@@ -1548,6 +1558,7 @@ check_sanity() {
+ 
+ 	for i in 'changelog' 'install'; do
+ 		local file
++		sed -n "s/^[[:space:]]*$i=//p" "$BUILDFILE" |
+ 		while read -r file; do
+ 			# evaluate any bash variables used
+ 			eval file=\"$(sed 's/^\(['\''"]\)\(.*\)\1$/\2/' <<< "$file")\"
+@@ -1555,7 +1566,7 @@ check_sanity() {
+ 				error "$(gettext "%s file (%s) does not exist.")" "$i" "$file"
+ 				ret=1
+ 			fi
+-		done < <(sed -n "s/^[[:space:]]*$i=//p" "$BUILDFILE")
++		done
+ 	done
+ 
+ 	local valid_options=1
+@@ -2362,14 +2373,15 @@ if (( INFAKEROOT )); then
+ 		exit 0 # $E_OK
+ 	fi
+ 
++	if (( BUILDFUNC )); then
++		run_build
++		(( CHECKFUNC )) && run_check
++	fi
++
+ 	if (( ! SPLITPKG )); then
+ 		if (( ! PKGFUNC )); then
+ 			if (( ! REPKG )); then
+-				if (( BUILDFUNC )); then
+-					run_build
+-					(( CHECKFUNC )) && run_check
+-					tidy_install
+-				fi
++				(( BUILDFUNC )) && tidy_install
+ 			else
+ 				warning "$(gettext "Repackaging without the use of a %s function is deprecated.")" "package()"
+ 				plain "$(gettext "File permissions may not be preserved.")"
+@@ -2528,8 +2540,8 @@ else
+ 	else
+ 		if (( ! REPKG && ( PKGFUNC || SPLITPKG ) )); then
+ 			devel_update
+-			(( BUILDFUNC )) && run_build
+-			(( CHECKFUNC )) && run_check
++			#(( BUILDFUNC )) && run_build
++			#(( CHECKFUNC )) && run_check
+ 			cd "$startdir"
+ 		fi
+ 
