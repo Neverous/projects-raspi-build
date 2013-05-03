@@ -1,10 +1,13 @@
 # $Id: PKGBUILD 177948 2013-02-12 12:13:44Z thomas $
 # Maintainer: Thomas Bächler <thomas@archlinux.org>
+
+# 03-05-2013 Raspi-Build: Maciej Szeptuch (Neverous) <neverous@neverous.info>
+
 pkgname=cryptsetup
 pkgver=1.6.0
 pkgrel=1
 pkgdesc="Userspace setup tool for transparent encryption of block devices using dm-crypt"
-arch=(i686 x86_64)
+arch=(armv6zk)
 license=('GPL')
 url="http://code.google.com/p/cryptsetup/"
 groups=('base')
@@ -20,15 +23,15 @@ md5sums=('99002ac59a65ea371e7a98200943cb80'
          '21c45f9cab3e0b5165f68358884fbd0f')
 
 build() {
-  cd "${srcdir}"/$pkgname-${pkgver}
-  ./configure --prefix=/usr --disable-static --enable-cryptsetup-reencrypt
-  make
+    cd "${srcdir}"/$pkgname-${pkgver}
+    ./configure --prefix=/usr --disable-static --enable-cryptsetup-reencrypt
+    make
 }
 
 package() {
-  cd "${srcdir}"/$pkgname-${pkgver}
-  make DESTDIR="${pkgdir}" install
-  # install hook
-  install -D -m644 "${srcdir}"/encrypt_hook "${pkgdir}"/usr/lib/initcpio/hooks/encrypt
-  install -D -m644 "${srcdir}"/encrypt_install "${pkgdir}"/usr/lib/initcpio/install/encrypt
+    cd "${srcdir}"/$pkgname-${pkgver}
+    make DESTDIR="${pkgdir}" install
+    # install hook
+    install -D -m644 "${srcdir}"/encrypt_hook "${pkgdir}"/usr/lib/initcpio/hooks/encrypt
+    install -D -m644 "${srcdir}"/encrypt_install "${pkgdir}"/usr/lib/initcpio/install/encrypt
 }

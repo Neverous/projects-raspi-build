@@ -5,11 +5,13 @@
 # Contributor: Judd Vinet <jvinet@zeroflux.org>
 # Contributor: John Proctor <jproctor@prium.net>
 
+# 03-05-2013 Raspi-Build: Maciej Szeptuch (Neverous) <neverous@neverous.info>
+
 pkgname=popt
 pkgver=1.16
 pkgrel=5
 pkgdesc="A commandline option parser"
-arch=('i686' 'x86_64')
+arch=('armv6zk')
 url="http://rpm5.org"
 license=('custom')
 depends=('glibc')
@@ -18,15 +20,15 @@ source=(http://rpm5.org/files/${pkgname}/${pkgname}-${pkgver}.tar.gz)
 sha1sums=('cfe94a15a2404db85858a81ff8de27c8ff3e235e')
 
 build() {
-  cd "${srcdir}/${pkgname}-${pkgver}"
+    cd "${srcdir}/${pkgname}-${pkgver}"
 
-  ./configure --prefix=/usr
-  make
+    ./configure --prefix=/usr
+    make
 }
 
 package() {
-  cd "${srcdir}/${pkgname}-${pkgver}"
-  make DESTDIR="${pkgdir}" install
+    cd "${srcdir}/${pkgname}-${pkgver}"
+    make DESTDIR="${pkgdir}" install
 
-  install -Dm644 COPYING "${pkgdir}"/usr/share/licenses/${pkgname}/LICENSE
+    install -Dm644 COPYING "${pkgdir}"/usr/share/licenses/${pkgname}/LICENSE
 }

@@ -4,34 +4,34 @@
 # ALARM: Kevin Mihelich <kevin@archlinuxarm.org>
 #  - added --shared to configure
 
-plugrel=1
+# 03-05-2013 Raspi-Build: Maciej Szeptuch (Neverous) <neverous@neverous.info>
 
 pkgname=zlib
-pkgver=1.2.7
+pkgver=1.2.8
 pkgrel=1
 pkgdesc='Compression library implementing the deflate compression method found in gzip and PKZIP'
-arch=('i686' 'x86_64')
+arch=('armv6zk')
 license=('custom')
 url="http://www.zlib.net/"
 depends=('glibc')
 source=("http://zlib.net/current/zlib-${pkgver}.tar.gz")
-md5sums=('60df6a37c56e7c1366cca812414f7b85')
 
 build() {
-	cd ${srcdir}/zlib-$pkgver
-	./configure --prefix=/usr --shared
-	make
+    cd ${srcdir}/zlib-$pkgver
+    ./configure --prefix=/usr --shared
+    make
 
-	grep -A 24 '^  Copyright' zlib.h > LICENSE
+    grep -A 24 '^  Copyright' zlib.h > LICENSE
 }
 
 check() {
-	cd ${srcdir}/zlib-$pkgver
-	make test
+    cd ${srcdir}/zlib-$pkgver
+    make test
 }
 
 package() {
-	cd ${srcdir}/zlib-$pkgver
-	make install DESTDIR=${pkgdir}
-	install -D -m644 LICENSE ${pkgdir}/usr/share/licenses/zlib/LICENSE
+    cd ${srcdir}/zlib-$pkgver
+    make install DESTDIR=${pkgdir}
+    install -D -m644 LICENSE ${pkgdir}/usr/share/licenses/zlib/LICENSE
 }
+md5sums=('44d667c142d7cda120332623eab69f40')

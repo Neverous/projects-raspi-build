@@ -1,5 +1,5 @@
-buildarch=18
-
+# 03-05-2013 Raspi-Build: Maciej Szeptuch (Neverous) <neverous@neverous.info>
+#   - Hardfloat only
 pkgbase=raspberrypi-firmware
 pkgname=('raspberrypi-firmware'
          'raspberrypi-firmware-bootloader'
@@ -19,76 +19,66 @@ _gitroot=git://github.com/raspberrypi/firmware.git
 _gitname=firmware
 
 build() {
-  msg "Connecting to GIT server...."
+    msg "Connecting to GIT server...."
 
-  if [[ -d "$_gitname" ]]; then
-    cd "$_gitname" && git pull origin
-    msg "The local files are updated."
-  else
-    git clone --depth 1 "$_gitroot" "$_gitname"
-  fi
+    if [[ -d "$_gitname" ]]; then
+        cd "$_gitname" && git pull origin
+        msg "The local files are updated."
+    else
+        git clone --depth 1 "$_gitroot" "$_gitname"
+    fi
 
-  msg "GIT checkout done or server timeout"
+    msg "GIT checkout done or server timeout"
 
-  rm -f "${srcdir}"/firmware/boot/kernel.img
+    rm -f "${srcdir}"/firmware/boot/kernel.img
 }
 
 package_raspberrypi-firmware() {
-  depends=('raspberrypi-firmware-bootloader'
-           'raspberrypi-firmware-bootloader-x'
-           'raspberrypi-firmware-emergency-kernel'
-           'raspberrypi-firmware-tools'
-           'raspberrypi-firmware-examples')
+    depends=('raspberrypi-firmware-bootloader'
+             'raspberrypi-firmware-bootloader-x'
+             'raspberrypi-firmware-emergency-kernel'
+             'raspberrypi-firmware-tools'
+             'raspberrypi-firmware-examples')
 }
 
 package_raspberrypi-firmware-bootloader() {
-  pkgdesc="Bootloader files for Raspberry Pi"
+    pkgdesc="Bootloader files for Raspberry Pi"
 
-  cp -R "${srcdir}"/firmware/boot "${pkgdir}"/boot
-  rm "${pkgdir}"/boot/{COPYING.linux,kernel*.img,start_x.elf,fixup_x.dat}
+    cp -R "${srcdir}"/firmware/boot "${pkgdir}"/boot
+    rm "${pkgdir}"/boot/{COPYING.linux,kernel*.img,start_x.elf,fixup_x.dat}
 }
 
 package_raspberrypi-firmware-bootloader-x() {
-  pkgdesc="Bootloader with extra codecs for Raspberry Pi"
-  depends=('raspberrypi-firmware-bootloader')
+    pkgdesc="Bootloader with extra codecs for Raspberry Pi"
+    depends=('raspberrypi-firmware-bootloader')
 
-  mkdir -p "${pkgdir}"/boot
-  cp "${srcdir}"/firmware/boot/{start_x.elf,fixup_x.dat} "${pkgdir}"/boot
+    mkdir -p "${pkgdir}"/boot
+    cp "${srcdir}"/firmware/boot/{start_x.elf,fixup_x.dat} "${pkgdir}"/boot
 }
 
 package_raspberrypi-firmware-emergency-kernel() {
-  pkgdesc="Emergency kernel for Raspberry Pi"
+    pkgdesc="Emergency kernel for Raspberry Pi"
 
-  mkdir -p "${pkgdir}"/boot
-  cp "${srcdir}"/firmware/boot/{COPYING.linux,kernel*.img} "${pkgdir}"/boot
+    mkdir -p "${pkgdir}"/boot
+    cp "${srcdir}"/firmware/boot/{COPYING.linux,kernel*.img} "${pkgdir}"/boot
 }
 
 package_raspberrypi-firmware-tools() {
-  pkgdesc="Firmware tools and header files for Raspberry Pi"
+    pkgdesc="Firmware tools and header files for Raspberry Pi"
 
-  mkdir -p "${pkgdir}"/opt/vc
-
-  if [[ $CARCH == "arm" ]]; then
-    cp -R "${srcdir}"/firmware/opt/vc/{bin,include,lib,sbin,LICENCE} "${pkgdir}"/opt/vc
-  elif [[ $CARCH == "armv6h" ]]; then
+    mkdir -p "${pkgdir}"/opt/vc
     cp -R "${srcdir}"/firmware/hardfp/opt/vc/{bin,include,lib,sbin,LICENCE} "${pkgdir}"/opt/vc
-  fi
 
-  # Create lib links
-  mkdir -p "${pkgdir}"/etc/ld.so.conf.d/
- 
-  # ensure we can load libs
-  echo "/opt/vc/lib/" > "${pkgdir}"/etc/ld.so.conf.d/raspberrypi-firmware.conf
+    # Create lib links
+    mkdir -p "${pkgdir}"/etc/ld.so.conf.d/
+
+    # ensure we can load libs
+    echo "/opt/vc/lib/" > "${pkgdir}"/etc/ld.so.conf.d/raspberrypi-firmware.conf
 }
 
 package_raspberrypi-firmware-examples() {
-  pkgdesc="Firmware example sources for Raspberry Pi"
+    pkgdesc="Firmware example sources for Raspberry Pi"
 
-  mkdir -p "${pkgdir}"/opt/vc
-
-  if [[ $CARCH == "arm" ]]; then
-    cp -R "${srcdir}"/firmware/opt/vc/src "${pkgdir}"/opt/vc
-  elif [[ $CARCH == "armv6h" ]]; then
+    mkdir -p "${pkgdir}"/opt/vc
     cp -R "${srcdir}"/firmware/hardfp/opt/vc/src "${pkgdir}"/opt/vc
-  fi
 }

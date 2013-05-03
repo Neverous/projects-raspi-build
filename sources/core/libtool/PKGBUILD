@@ -4,11 +4,13 @@
 
 # NOTE: requires rebuilt with each new gcc version
 
+# 03-05-2013 Raspi-Build: Maciej Szeptuch (Neverous) <neverous@neverous.info>
+
 pkgname=('libtool' 'libltdl')
 pkgver=2.4.2
 pkgrel=8
 pkgdesc="A generic library support script"
-arch=('i686' 'x86_64')
+arch=('armv6zk')
 url="http://www.gnu.org/software/libtool"
 license=('GPL')
 options=('!libtool')
@@ -17,33 +19,33 @@ md5sums=('2ec8997e0c07249eb4cbd072417d70fe'
          '1e6ba57420c82c663c85e745d11c7eed')
 
 build() {
-  cd ${srcdir}/${pkgbase}-${pkgver}
-  ./configure --prefix=/usr
-  make
+    cd ${srcdir}/${pkgbase}-${pkgver}
+    ./configure --prefix=/usr
+    make
 }
 
 check() {
-  cd ${srcdir}/${pkgbase}-${pkgver}
-  make check
+    cd ${srcdir}/${pkgbase}-${pkgver}
+    make check
 }
 
 package_libtool() {
-  depends=('sh' "libltdl=$pkgver" 'tar' 'gcc=4.8.0')
-  groups=('base-devel')
-  install=libtool.install
+    depends=('sh' "libltdl=$pkgver" 'tar' 'gcc=4.8.0')
+    groups=('base-devel')
+    install=libtool.install
 
-  cd ${srcdir}/${pkgbase}-${pkgver}
-  
-  make DESTDIR=${pkgdir} install-binSCRIPTS install-man install-info \
-                         install-data-local
-  rm -rf ${pkgdir}/usr/share/libtool/libltdl/
+    cd ${srcdir}/${pkgbase}-${pkgver}
+
+    make DESTDIR=${pkgdir} install-binSCRIPTS install-man install-info \
+        install-data-local
+    rm -rf ${pkgdir}/usr/share/libtool/libltdl/
 }
 
 package_libltdl() {
-  pkgdesc="A system independent dlopen wrapper for GNU libtool"
+    pkgdesc="A system independent dlopen wrapper for GNU libtool"
 
-  cd ${srcdir}/${pkgbase}-${pkgver}
-  make DESTDIR=${pkgdir} install-libLTLIBRARIES install-includeHEADERS \
-                         install-ltdlincludeHEADERS install-data-local
-  rm -rf ${pkgdir}/usr/share/{aclocal,libtool/config}
+    cd ${srcdir}/${pkgbase}-${pkgver}
+    make DESTDIR=${pkgdir} install-libLTLIBRARIES install-includeHEADERS \
+        install-ltdlincludeHEADERS install-data-local
+    rm -rf ${pkgdir}/usr/share/{aclocal,libtool/config}
 }

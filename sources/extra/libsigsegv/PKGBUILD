@@ -2,10 +2,12 @@
 # Maintainer: Ronald van Haren <ronald.archlinux.org>
 # Contributor: Johannes Weiner <hannes@saeurebad.de>
 
+# 03-05-2013 Raspi-Build: Maciej Szeptuch (Neverous) <neverous@neverous.info>
+
 pkgname=libsigsegv
 pkgver=2.10
 pkgrel=1
-arch=('x86_64' 'i686')
+arch=('armv6zk')
 pkgdesc="Page fault detection library"
 url="http://www.gnu.org/software/libsigsegv/"
 license=('GPL2')
@@ -15,12 +17,12 @@ source=("http://ftp.gnu.org/gnu/${pkgname}/${pkgname}-${pkgver}.tar.gz")
 sha1sums=('b75a647a9ebda70e7a3b33583efdd550e0eac094')
 
 build() {
-  cd ${srcdir}/${pkgname}-${pkgver}
-  ./configure --prefix=/usr --enable-shared
-  make
+    cd ${srcdir}/${pkgname}-${pkgver}
+    ./configure --prefix=/usr --enable-shared
+    make
 }
 
 package() {
-  cd ${srcdir}/${pkgname}-${pkgver}
-  make DESTDIR=${pkgdir} install
+    cd ${srcdir}/${pkgname}-${pkgver}
+    make DESTDIR=${pkgdir} install
 }

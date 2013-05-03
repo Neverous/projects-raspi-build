@@ -1,11 +1,14 @@
 # $Id: PKGBUILD 170257 2012-11-06 12:56:18Z tomegun $
 # Maintainer: Tobias Powalowski <tpowa@archlinux.org>
 
+# 03-05-2013 Raspi-Build: Maciej Szeptuch (Neverous) <neverous@neverous.info>
+#   - Fixed autoconf issues
+
 pkgname=libtirpc
 pkgver=0.2.2
 pkgrel=4
 pkgdesc="Transport Independent RPC library (SunRPC replacement)"
-arch=('i686' 'x86_64')
+arch=('armv6zk')
 url="http://libtirpc.sourceforge.net/"
 license=('BSD')
 depends=('libgssglue')
@@ -21,22 +24,24 @@ md5sums=('74c41c15c2909f7d11d9c7bfa7db6273'
          '5a3ab55934cad4e8b38fc90c54756472')
 
 build() {
-  cd "${srcdir}/${pkgname}-${pkgver}"
-  # fix http://bugs.gentoo.org/293593
-  # https://bugs.archlinux.org/task/20082
-  patch -Np1 -i ../libtirpc-0.2.1-fortify.patch
-  # add patches from fedora git to make nfs-utils compile again
-  patch -Np1 -i ../libtirpc-0.2.3rc1.patch
-  patch -Np1 -i ../libtirpc-fix-segfault-0.2.2.patch
-  sh autogen.sh
-  autoreconf -fisv
-  ./configure --prefix=/usr --enable-gss
-  make
+    cd "${srcdir}/${pkgname}-${pkgver}"
+    # fix http://bugs.gentoo.org/293593
+    # https://bugs.archlinux.org/task/20082
+    patch -Np1 -i ../libtirpc-0.2.1-fortify.patch
+    # add patches from fedora git to make nfs-utils compile again
+    patch -Np1 -i ../libtirpc-0.2.3rc1.patch
+    patch -Np1 -i ../libtirpc-fix-segfault-0.2.2.patch
+    autoupdate
+    sed -i -e 's/AM_CONFIG_HEADER/AC_CONFIG_HEADERS/g' configure.ac
+    sh autogen.sh
+    autoreconf -fisv
+    ./configure --prefix=/usr --enable-gss
+    make
 }
 
 package() {
-  cd "${srcdir}/${pkgname}-${pkgver}"
-  make DESTDIR="${pkgdir}" install
-  install -D -m644 doc/etc_netconfig "${pkgdir}"/etc/netconfig
-  install -D -m644 COPYING "${pkgdir}"/usr/share/licenses/${pkgname}/LICENSE
+    cd "${srcdir}/${pkgname}-${pkgver}"
+    make DESTDIR="${pkgdir}" install
+    install -D -m644 doc/etc_netconfig "${pkgdir}"/etc/netconfig
+    install -D -m644 COPYING "${pkgdir}"/usr/share/licenses/${pkgname}/LICENSE
 }

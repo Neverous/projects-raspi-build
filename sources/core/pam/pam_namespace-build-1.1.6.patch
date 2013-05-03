@@ -6,6 +6,6 @@
  install-data-local:
 -	mkdir -p $(namespaceddir)
 +	mkdir -p $(DESTDIR)$(namespaceddir)
- README: pam_namespace.8.xml namespace.conf.5.xml
- -include $(top_srcdir)/Make.xml.rules
+ #README: pam_namespace.8.xml namespace.conf.5.xml
+ #-include $(top_srcdir)/Make.xml.rules
  

@@ -2,13 +2,15 @@
 # Maintainer: Allan McRae <allan@archlinux.org>
 # Contributor: Aaron Griffin <aaron@archlinux.org>
 
+# 03-05-2013 Raspi-Build: Maciej Szeptuch (Neverous) <neverous@neverous.info>
+
 pkgname=bash
 _basever=4.2
 _patchlevel=045 #prepare for some patches
 pkgver=$_basever.$_patchlevel
 pkgrel=1
 pkgdesc="The GNU Bourne Again shell"
-arch=('i686' 'x86_64')
+arch=('armv6zk')
 license=('GPL')
 url="http://www.gnu.org/software/bash/bash.html"
 groups=('base')
@@ -29,47 +31,47 @@ if [ $_patchlevel -gt 000 ]; then
 fi
 
 build() {
-  cd ${srcdir}/${pkgname}-$_basever
-  for (( p=1; p<=$((10#${_patchlevel})); p++ )); do
-    msg "applying patch bash${_basever//./}-$(printf "%03d" $p)"
-    patch -Np0 -i $srcdir/bash${_basever//./}-$(printf "%03d" $p)
-  done
+    cd ${srcdir}/${pkgname}-$_basever
+    for (( p=1; p<=$((10#${_patchlevel})); p++ )); do
+        msg "applying patch bash${_basever//./}-$(printf "%03d" $p)"
+        patch -Np0 -i $srcdir/bash${_basever//./}-$(printf "%03d" $p)
+    done
 
-  _bashconfig=(-DDEFAULT_PATH_VALUE=\'\"/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin\"\'
-               -DSTANDARD_UTILS_PATH=\'\"/usr/bin:/bin:/usr/sbin:/sbin\"\'
-               -DSYS_BASHRC=\'\"/etc/bash.bashrc\"\'
-               -DSYS_BASH_LOGOUT=\'\"/etc/bash.bash_logout\"\')
-  export CFLAGS="${CFLAGS} ${_bashconfig[@]}"
+    _bashconfig=(-DDEFAULT_PATH_VALUE=\'\"/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin\"\'
+    -DSTANDARD_UTILS_PATH=\'\"/usr/bin:/bin:/usr/sbin:/sbin\"\'
+    -DSYS_BASHRC=\'\"/etc/bash.bashrc\"\'
+    -DSYS_BASH_LOGOUT=\'\"/etc/bash.bash_logout\"\')
+    export CFLAGS="${CFLAGS} ${_bashconfig[@]}"
 
-  ./configure --prefix=/usr --with-curses --enable-readline \
-    --without-bash-malloc --with-installed-readline
-  make
+    ./configure --prefix=/usr --with-curses --enable-readline \
+        --without-bash-malloc --with-installed-readline
+    make
 }
 
 check() {
-  cd ${srcdir}/${pkgname}-$_basever
-  make check
+    cd ${srcdir}/${pkgname}-$_basever
+    make check
 }
 
 package() {
-  cd ${srcdir}/${pkgname}-$_basever
-  make DESTDIR=${pkgdir} install
+    cd ${srcdir}/${pkgname}-$_basever
+    make DESTDIR=${pkgdir} install
 
-  # put needed symlinks in /bin
-  install -dm755  ${pkgdir}/bin
-  ln -s ../usr/bin/bash ${pkgdir}/bin/bash
-  ln -s ../usr/bin/bash ${pkgdir}/bin/sh
+    # put needed symlinks in /bin
+    install -dm755  ${pkgdir}/bin
+    ln -s ../usr/bin/bash ${pkgdir}/bin/bash
+    ln -s ../usr/bin/bash ${pkgdir}/bin/sh
 
-  install -dm755 ${pkgdir}/etc/skel/
-  
-  # system-wide configuration files
-  install -m644 ${srcdir}/system.bashrc ${pkgdir}/etc/bash.bashrc
-  install -m644 ${srcdir}/system.bash_logout ${pkgdir}/etc/bash.bash_logout
-  
-  # user configuration file skeletons
-  install -m644 ${srcdir}/dot.bashrc ${pkgdir}/etc/skel/.bashrc
-  install -m644 ${srcdir}/dot.bash_profile ${pkgdir}/etc/skel/.bash_profile
-  install -m644 ${srcdir}/dot.bash_logout ${pkgdir}/etc/skel/.bash_logout
+    install -dm755 ${pkgdir}/etc/skel/
+
+    # system-wide configuration files
+    install -m644 ${srcdir}/system.bashrc ${pkgdir}/etc/bash.bashrc
+    install -m644 ${srcdir}/system.bash_logout ${pkgdir}/etc/bash.bash_logout
+
+    # user configuration file skeletons
+    install -m644 ${srcdir}/dot.bashrc ${pkgdir}/etc/skel/.bashrc
+    install -m644 ${srcdir}/dot.bash_profile ${pkgdir}/etc/skel/.bash_profile
+    install -m644 ${srcdir}/dot.bash_logout ${pkgdir}/etc/skel/.bash_logout
 }
 
 md5sums=('3fb927c7c33022f1c327f14a81c0d4b0'

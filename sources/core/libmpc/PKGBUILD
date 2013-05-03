@@ -1,11 +1,13 @@
 # $Id: PKGBUILD 166514 2012-09-09 07:34:43Z allan $
 # Maintainer: Allan McRae <allan@archlinux.org>
 
+# 03-05-2013 Raspi-Build: Maciej Szeptuch (Neverous) <neverous@neverous.info>
+
 pkgname=libmpc
 pkgver=1.0.1
 pkgrel=1
 pkgdesc="Library for the arithmetic of complex numbers with arbitrarily high precision"
-arch=('i686' 'x86_64')
+arch=('armv6zk')
 url="http://www.multiprecision.org/"
 license=('LGPL')
 depends=('mpfr>=3.0.0')
@@ -16,18 +18,18 @@ md5sums=('b32a2e1a3daa392372fbd586d1ed3679'
          'c064863fbbb5831ba4f75f1181333862')
 
 build() {
-  cd "${srcdir}/mpc-${pkgver}"
-  ./configure --prefix=/usr
-  make
+    cd "${srcdir}/mpc-${pkgver}"
+    ./configure --prefix=/usr
+    make
 }
 
 check() {
-  cd "${srcdir}/mpc-${pkgver}"
-  make check
+    cd "${srcdir}/mpc-${pkgver}"
+    make check
 }
 
 package() {
-  cd "${srcdir}/mpc-${pkgver}"
-  make DESTDIR="${pkgdir}" install
-  mv ${pkgdir}/usr/share/info/{mpc,libmpc}.info
+    cd "${srcdir}/mpc-${pkgver}"
+    make DESTDIR="${pkgdir}" install
+    mv ${pkgdir}/usr/share/info/{mpc,libmpc}.info
 }

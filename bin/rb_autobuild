@@ -331,6 +331,8 @@ function download_sources()
     run ${src} cd "${RB_WORKDIR}/src/${src}" || return 1;
     run ${src} rb_clean || return 1;
     run ${src} rb_makepkg --verifysource || return 1;
+    run ${src} rm -rf src || return 1;
+    run ${src} rm -rf pkg || return 1;
     return 0;
 }
 
@@ -347,7 +349,7 @@ function install_package()
 {
     src="$@";
     run ${src} cd "${RB_WORKDIR}/build/${src}" || return 1;
-    run ${src} rb_install --noconfirm *.pkg.* || rb_install *.pkg.* || return 1;
+    run ${src} rb_install --noconfirm *.pkg.* || rb_install --force *.pkg.* || return 1;
     run ${src} touch .installed || return 1;
     return 0;
 }

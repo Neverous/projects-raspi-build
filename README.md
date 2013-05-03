@@ -28,7 +28,7 @@ Well, I started this "project" when there only was armv5 image from [Arch Linux 
             * `extra_cross_compiler_args` += `-L@SBOX_TARGET_ROOT@/opt/vc/lib -I@SBOX_TARGET_ROOT@/opt/vc/include -I@SBOX_TARGET_ROOT@/opt/vc/include/interface/vcos/pthreads`
             * `extra_cross_ld_args` += `:@SBOX_TARGET_ROOT@/opt/vc/lib`
         * `gcc.config.sh`
-            * `SBOX_EXTRA_CROSSCOMPILER_ARGS` += `-L@SBOX_TARGET_ROOT@/opt/vc/lib -I@SBOX_TARGET_ROOT@/opt/vc/include -I@SBOX_TARGET_ROOT@/opt/vc/include/interface/vcos/pthreads`
+            * `SBOX_EXTRA_CROSS_COMPILER_ARGS` += `-L@SBOX_TARGET_ROOT@/opt/vc/lib -I@SBOX_TARGET_ROOT@/opt/vc/include -I@SBOX_TARGET_ROOT@/opt/vc/include/interface/vcos/pthreads`
     * Adjust scratchbox2 mapping in `${RB_WORKDIR}/host/share/scratchbox2/lua_scripts/pathmaps/simple/00_default.lua`:
 
 ```diff

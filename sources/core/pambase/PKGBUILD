@@ -1,6 +1,8 @@
 # $Id: PKGBUILD 175158 2013-01-15 17:39:47Z dreisner $
 # Maintainer: Dave Reisner <dreisner@archlinux.org>
 
+# 03-05-2013 Raspi-Build: Maciej Szeptuch (Neverous) <neverous@neverous.info>
+
 pkgname=pambase
 pkgver=20130113
 pkgrel=1
@@ -28,8 +30,6 @@ md5sums=('5f169a4ffe7ed69f58e106cdd2d760df'
          '6e6c8719e5989d976a14610f340bd33a')
 
 package() {
-  install -dm755 "$pkgdir/etc/pam.d"
-  install -m644 -t "$pkgdir/etc/pam.d" "${source[@]}"
+    install -dm755 "$pkgdir/etc/pam.d"
+    install -m644 -t "$pkgdir/etc/pam.d" "${source[@]}"
 }
-
-# vim:set ts=2 sw=2 et:
