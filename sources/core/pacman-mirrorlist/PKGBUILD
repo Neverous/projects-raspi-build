@@ -1,0 +1,22 @@
+# Maintainer: Kevin Mihelich <kevin@archlinuxarm.org>
+
+# 04-05-2013 Raspi-Build: Maciej Szeptuch (Neverous) <neverous@neverous.info>
+
+pkgname=pacman-mirrorlist
+pkgver=20130424
+pkgrel=1
+pkgdesc="Arch Linux ARM mirror list for use by pacman"
+arch=('armv6zk')
+url="http://www.archlinux.org/pacman/"
+license=('GPL')
+groups=('base')
+backup=(etc/pacman.d/mirrorlist)
+source=(mirrorlist)
+md5sums=('a610c6b17b93de3768d7d6ffb210453b')
+
+package() {
+    mkdir -p $pkgdir/etc/pacman.d/
+    install -m644 $srcdir/mirrorlist $pkgdir/etc/pacman.d/
+    # customize mirrorlist to architecture
+    sed -i -e "s/@carch@/${CARCH}/g" $pkgdir/etc/pacman.d/mirrorlist
+}
