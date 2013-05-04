@@ -433,6 +433,12 @@ RB_AUTOBUILD_PACKAGES=(
 'core/dbus'
 'alarm/uboot-mkimage'
 'core/linux-raspi'
+'community/chrpath'
+'core/iptables'
+'core/iproute2'
+'extra/dhcp'
+'core/openresolv'
+'core/netctl'
 )
 
 # RUN
