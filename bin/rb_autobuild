@@ -479,6 +479,15 @@ RB_AUTOBUILD_PACKAGES=(
 'core/texinfo'
 'extra/libidn'
 'extra/wget'
+'core/traceroute'
+'core/inetutils'
+'core/sudo'
+'core/psmisc'
+'extra/screen'
+'community/iperf'
+'extra/idnkit'
+'extra/libxml2'
+'extra/dnsutils'
 )
 
 # RUN
