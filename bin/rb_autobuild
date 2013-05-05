@@ -488,6 +488,10 @@ RB_AUTOBUILD_PACKAGES=(
 'extra/idnkit'
 'extra/libxml2'
 'extra/dnsutils'
+'core/less'
+'extra/zsh'
+'core/procps-ng'
+'extra/rsync'
 )
 
 # RUN
