@@ -462,6 +462,8 @@ RB_AUTOBUILD_PACKAGES=(
 'core/pacman-mirrorlist'
 'core/archlinux-keyring'
 'core/pacman'
+'extra/vim'
+'community/pdnsd'
 )
 
 # RUN

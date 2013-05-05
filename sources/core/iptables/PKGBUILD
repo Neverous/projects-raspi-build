@@ -4,6 +4,7 @@
 
 # 04-05-2013 Raspi-Build: Maciej Szeptuch (Neverous) <neverous@neverous.info>
 #   - disabled ipv6
+#   - removed rc.d script
 
 pkgname=iptables
 pkgver=1.4.18
@@ -16,7 +17,6 @@ depends=('glibc' 'bash')
 makedepends=('linux-api-headers' 'chrpath')
 options=('!libtool')
 source=("http://www.netfilter.org/projects/iptables/files/${pkgname}-${pkgver}.tar.bz2"
-        iptables
         empty.rules
         simple_firewall.rules
         iptables.conf.d
@@ -56,7 +56,6 @@ package() {
     chrpath --delete "${pkgdir}"/usr/lib/iptables/*.so
 
     cd "${srcdir}"
-    install -D -m755 iptables "${pkgdir}"/etc/rc.d/iptables
     install -D -m644 empty.rules "${pkgdir}"/etc/iptables/empty.rules
     install -D -m644 simple_firewall.rules "${pkgdir}"/etc/iptables/simple_firewall.rules
     install -D -m644 iptables.conf.d "${pkgdir}"/etc/conf.d/iptables
@@ -70,7 +69,6 @@ package() {
 }
 
 sha1sums=('34bf627c8755a61caf3635a998d2a5279f664f9e'
-          '5bb6fa526665cdd728c26f0f282f5a51f220cf88'
           '83b3363878e3660ce23b2ad325b53cbd6c796ecf'
           'f085a71f467e4d7cb2cf094d9369b0bcc4bab6ec'
           'cbd14ba3cb6966f8b610049b71d4bd400f9dfd6d'
