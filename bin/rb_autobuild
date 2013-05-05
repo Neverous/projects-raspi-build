@@ -499,6 +499,22 @@ RB_AUTOBUILD_PACKAGES=(
 'extra/shared-mime-info'
 'extra/cmake'
 #'extra/mariadb' # wont build with sb2 so far
+'extra/postgresql'
+'extra/libjpeg-turbo'
+'extra/libpng'
+'extra/aspell'
+'extra/tidyhtml'
+'extra/libmcrypt'
+'extra/libzip'
+'extra/icu'
+'extra/python-distribute'
+'extra/net-snmp'
+'extra/unixodbc'
+'extra/libvpx'
+'extra/imap'
+'extra/freetype2'
+'extra/libxslt'
+'extra/php'
 )
 
 # RUN
