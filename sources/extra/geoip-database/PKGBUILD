@@ -1,0 +1,49 @@
+# $Id: PKGBUILD 177517 2013-02-06 16:18:02Z foutrelis $
+# Maintainer: Evangelos Foutras <evangelos@foutrelis.com>
+
+# 05-05-2013 Raspi-Build: Maciej Szeptuch (Neverous) <neverous@neverous.info>
+
+pkgname=geoip-database
+pkgver=20130206
+pkgrel=1
+pkgdesc="GeoLite country geolocation database compiled by MaxMind"
+arch=('any')
+url="http://www.maxmind.com/app/ip-location"
+license=('custom:OPEN DATA LICENSE')
+source=(GeoIP-$pkgver.dat.gz::http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz
+        GeoIPv6-$pkgver.dat.gz::http://geolite.maxmind.com/download/geoip/database/GeoIPv6.dat.gz
+        http://geolite.maxmind.com/download/geoip/database/LICENSE.txt)
+noextract=(GeoIP-$pkgver.dat.gz
+           GeoIPv6-$pkgver.dat.gz)
+
+build() {
+    cd "$srcdir"
+
+    for _database_name in GeoIP GeoIPv6; do
+        gunzip -c $_database_name-$pkgver.dat.gz >$_database_name.dat
+    done
+}
+
+check() {
+    cd "$srcdir"
+
+    for _database in {GeoIP,GeoIPv6}.dat; do
+        if ! grep -q 'MaxMind Inc All Rights Reserved' $_database; then
+            error "Copyright notice is missing from $_database; something is fishy!"
+            return 1
+        fi
+    done
+}
+
+package() {
+    cd "$srcdir"
+
+    install -d "$pkgdir/usr/share/GeoIP"
+    install -m644 -t "$pkgdir/usr/share/GeoIP" GeoIP.dat GeoIPv6.dat
+
+    install -Dm644 LICENSE.txt "$pkgdir/usr/share/licenses/$pkgname/LICENSE.txt"
+}
+
+sha256sums=('7f98a1395ed3cbd0139650869e70129d07bd498cd9b36d1485a2993d7d95df4c'
+            '4c773dd8fd679b04489930555f4f6a8225e74b7271b0b6afc543d7b4824eb30c'
+            '83a4cb82ef8953c0107886b49bc39fcf77590a222d30e778d48f5d92f5b5e383')

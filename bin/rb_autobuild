@@ -515,6 +515,9 @@ RB_AUTOBUILD_PACKAGES=(
 'extra/freetype2'
 'extra/libxslt'
 'extra/php'
+'extra/geoip-database'
+'extra/geoip'
+'community/nginx'
 )
 
 # RUN
