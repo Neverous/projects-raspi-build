@@ -464,6 +464,9 @@ RB_AUTOBUILD_PACKAGES=(
 'core/pacman'
 'extra/vim'
 'community/pdnsd'
+'core/libevent'
+'core/rpcbind'
+'core/nfs-utils'
 )
 
 # RUN
