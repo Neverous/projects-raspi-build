@@ -171,7 +171,7 @@ function msg_stat()
 
 function msg_done_before()
 {
-    printf "\r%s\b\b\b%s\n" "${_prev}" "${white}[${yellow}B4${white}]${none}";
+    printf "\r%s\b\b\b\b%s\n" "${_prev}" "${white}[${yellow}B4${white}]${none}";
 }
 
 function msg_skip()
@@ -518,6 +518,36 @@ RB_AUTOBUILD_PACKAGES=(
 'extra/geoip-database'
 'extra/geoip'
 'community/nginx'
+'extra/fontconfig'
+'extra/xorg-fonts-encodings'
+'extra/xproto'
+'extra/libfontenc'
+'extra/xorg-mkfontscale'
+'extra/xorg-mkfontdir'
+'extra/ttf-dejavu'
+'extra/renderproto'
+'extra/xcb-proto'
+'extra/libxdmcp'
+'extra/libxau'
+'extra/libxcb'
+'extra/kbproto'
+'extra/xextproto'
+'extra/xtrans'
+'extra/inputproto'
+'extra/libx11'
+'extra/libxrender'
+'extra/libxft'
+'extra/libdatrie'
+'extra/libthai'
+'extra/graphite'
+'extra/harfbuzz'
+'extra/pixman'
+'extra/libxext'
+'extra/cairo'
+'extra/pango'
+'extra/rrdtool'
+'extra/lm_sensors'
+'community/collectd'
 )
 
 # RUN

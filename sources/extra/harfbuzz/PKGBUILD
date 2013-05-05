@@ -1,0 +1,31 @@
+# $Id: PKGBUILD 183266 2013-04-20 05:39:22Z heftig $
+# Maintainer: Jan de Groot <jgc@archlinux.org>
+
+# 05-05-2013 Raspi-Build: Maciej Szeptuch (Neverous) <neverous@neverous.info>
+
+pkgname=harfbuzz
+pkgver=0.9.16
+pkgrel=1
+pkgdesc="OpenType text shaping engine."
+arch=('armv6zk')
+url="http://www.freedesktop.org/wiki/Software/HarfBuzz"
+license=('MIT')
+depends=('icu' 'glib2' 'freetype2' 'graphite>=1.2.0')
+makedepends=('icu' 'cairo' 'glib2' 'freetype2')
+optdepends=('cairo: hb-view program')
+options=(!libtool)
+source=(http://www.freedesktop.org/software/harfbuzz/release/${pkgname}-${pkgver}.tar.bz2)
+sha256sums=('6da7e032f705d8a5c91487cd296628d64975672a5b0c1704829cf2285072c92b')
+
+build() {
+    cd ${pkgname}-${pkgver}
+
+    ./configure --prefix=/usr
+    make
+}
+
+package() {
+    cd ${pkgname}-${pkgver}
+    make DESTDIR="${pkgdir}" install
+    install -Dm644 COPYING "${pkgdir}/usr/share/licenses/harfbuzz/COPYING"
+}

@@ -1,0 +1,40 @@
+# $Id: PKGBUILD 180584 2013-03-23 23:09:38Z td123 $
+# Maintainer: Eric Bélanger <eric@archlinux.org>
+
+# 05-05-2013 Raspi-Build: Maciej Szeptuch (Neverous) <neverous@neverous.info>
+#   - disabled tcl, ruby
+
+pkgname=rrdtool
+pkgver=1.4.7
+pkgrel=5
+pkgdesc="Data logging and graphing application"
+arch=('armv6zk')
+url="http://www.rrdtool.org"
+license=('GPL' 'custom')
+depends=('libxml2' 'pango' 'ttf-dejavu')
+makedepends=('intltool' 'python2' 'lua51')
+optdepends=('python2: to use corresponding binding' \
+            'lua51: to use corresponding binding')
+options=('!libtool' '!emptydirs' '!makeflags')
+source=(http://oss.oetiker.ch/rrdtool/pub/rrdtool-${pkgver}.tar.gz)
+sha1sums=('faab7df7696b69f85d6f89dd9708d7cf0c9a273b')
+
+build() {
+    cd "${srcdir}/${pkgname}-${pkgver}"
+
+    # fix FS#28521 make ruby install to vendor_ruby instead of site_ruby
+    sed -e 's/$(RUBY) extconf.rb/& --vendor/' -i bindings/Makefile.in
+
+    PYTHON=python2 \
+        ./configure --prefix=/usr --localstatedir=/var --disable-rpath \
+        --enable-perl --enable-perl-site-install --with-perl-options='INSTALLDIRS=vendor' \
+        --enable-python \
+        --enable-lua --enable-lua-site-install --disable-libwrap
+    make
+}
+
+package() {
+    cd "${srcdir}/${pkgname}-${pkgver}"
+    make DESTDIR="${pkgdir}" includedir=/usr/include install
+    install -D -m644 COPYRIGHT "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+}

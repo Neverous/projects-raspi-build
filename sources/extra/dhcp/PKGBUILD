@@ -3,6 +3,7 @@
 
 # 04-05-2013 Raspi-Build: Maciej Szeptuch (Neverous) <neverous@neverous.info>
 #   - disabled ipv6
+#   - removed rc.d script
 
 pkgbase=dhcp
 pkgname=('dhcp' 'dhclient')
@@ -47,7 +48,6 @@ package_dhcp(){
     cd "${srcdir}/${pkgbase}-${_pkgver}"
     make DESTDIR="${pkgdir}" install
 
-    install -D -m755 "${srcdir}/dhcp4" "${pkgdir}/etc/rc.d/dhcp4"
     install -D -m644 "${srcdir}/dhcp" "${pkgdir}/etc/conf.d/${pkgbase}"
     install -d "${pkgdir}/var/lib/dhcp"
 
