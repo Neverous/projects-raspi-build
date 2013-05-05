@@ -492,6 +492,10 @@ RB_AUTOBUILD_PACKAGES=(
 'extra/zsh'
 'core/procps-ng'
 'extra/rsync'
+'extra/libsigc++'
+'community/libtorrent'
+'community/xmlrpc-c'
+'community/rtorrent'
 )
 
 # RUN
