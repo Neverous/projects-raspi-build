@@ -467,6 +467,18 @@ RB_AUTOBUILD_PACKAGES=(
 'core/libevent'
 'core/rpcbind'
 'core/nfs-utils'
+'extra/lua'
+'core/file'
+'core/sysfsutils'
+'core/iputils'
+'core/libnl'
+'core/libpcap'
+'extra/nmap'
+'core/gzip'
+'core/logrotate'
+'core/texinfo'
+'extra/libidn'
+'extra/wget'
 )
 
 # RUN

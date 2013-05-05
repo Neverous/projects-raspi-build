@@ -1,0 +1,31 @@
+# $Id: PKGBUILD 178107 2013-02-16 09:56:28Z ronald $
+# Maintainer: Ronald van Haren <ronald.archlinux.org>
+# Contributor: Jan de Groot <jgc.archlinux.org>
+# Contributor: Eric Johnson <eric.archlinux.org>
+
+# 05-05-2013 Raspi-Build: Maciej Szeptuch (Neverous) <neverous@neverous.info>
+
+pkgname=libidn
+pkgver=1.26
+pkgrel=1
+pkgdesc="Implementation of the Stringprep, Punycode and IDNA specifications"
+url="http://www.gnu.org/software/libidn/"
+arch=('armv6zk')
+license=('GPL3' 'LGPL')
+depends=('glibc' 'texinfo')
+makedepends=('pkgconfig')
+options=('!libtool')
+source=(http://ftp.gnu.org/gnu/${pkgname}/${pkgname}-${pkgver}.tar.gz)
+install=libidn.install
+sha1sums=('b1cb40646a96dadbfc41d060d23dfb382eec1128')
+	
+build() {
+    cd ${srcdir}/${pkgname}-${pkgver}
+    ./configure --prefix=/usr
+    make
+}
+
+package() {
+    cd ${srcdir}/${pkgname}-${pkgver}
+    make DESTDIR=${pkgdir} install
+}
