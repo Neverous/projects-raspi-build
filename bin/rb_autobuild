@@ -184,14 +184,14 @@ function msg_skip()
 
 function msg_done()
 {
-    printf "\r%s\b\b\b%s\n" "${_prev}" "${white}[${green}OK${white}]${none}";
+    printf "\r%s\b\b\b\b%s\n" "${_prev}" "${white}[${green}OK${white}]${none}";
 }
 
 function msg_error()
 {
     date=$(date +"%Y-%m-%d %H:%M:%S")
     message="[${date}]$@";
-    printf "\r%s\b\b\b%s\n%s\n" "${_prev}" "${white}[${red}ER${white}]${none}" "${message}";
+    printf "\r%s\b\b\b\b%s\n%s\n" "${_prev}" "${white}[${red}ER${white}]${none}" "${message}";
 }
 
 function check_source()
@@ -548,6 +548,20 @@ RB_AUTOBUILD_PACKAGES=(
 'extra/rrdtool'
 'extra/lm_sensors'
 'community/collectd'
+'extra/strace'
+'extra/lsof'
+'extra/htop'
+'extra/perl-error'
+'extra/git'
+'extra/perl-html-tagset'
+'extra/perl-html-parser'
+'extra/ntp'
+'core/cronie'
+'community/f2fs-tools'
+'extra/dosfstools'
+'extra/fcgi'
+'community/fcgiwrap'
+'community/cgit'
 )
 
 # RUN

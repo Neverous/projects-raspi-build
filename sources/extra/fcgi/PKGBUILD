@@ -1,0 +1,38 @@
+# $Id: PKGBUILD 173924 2012-12-28 05:30:53Z pierre $
+# Maintainer: tobias <tobias@justdreams.de>
+# Modified by: eliott <eliott@cactuswax.net>
+# Original by Benjamin Andresen, klapmuetz [at] gmail [dot] com
+
+# 06-05-2013 Raspi-Build: Maciej Szeptuch (Neverous) <neverous@neverous.info>
+
+pkgname=fcgi
+pkgver=2.4.0
+pkgrel=8
+depends=('gcc-libs')
+pkgdesc="FASTCgi(fcgi) islanguage independent, high performant extension to CGI"
+arch=('armv6zk')
+license=('custom')
+options=('!libtool' '!makeflags')
+url="http://www.fastcgi.com"
+source=("http://www.fastcgi.com/dist/${pkgname}-${pkgver}.tar.gz"
+        'gcc44-fix-include.patch')
+md5sums=('d15060a813b91383a9f3c66faf84867e'
+         'a8028462163755f3ce457a5c641f237b')
+
+build() {
+    cd "${srcdir}/${pkgname}-${pkgver}"
+    patch -p1 -i "${srcdir}/gcc44-fix-include.patch"
+    libtoolize --force
+    sed -i -e 's/AM_CONFIG_HEADER/AC_CONFIG_HEADERS/g' configure.in
+    aclocal
+    autoconf
+    automake --foreign
+    ./configure --prefix=/usr
+    make
+}
+
+package() {
+    cd "${srcdir}/${pkgname}-${pkgver}"
+    make DESTDIR="${pkgdir}" install
+    install -Dm644 LICENSE.TERMS "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+}
