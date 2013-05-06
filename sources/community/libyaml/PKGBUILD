@@ -1,0 +1,28 @@
+# $Id: PKGBUILD 66208 2012-02-23 03:22:37Z spupykin $
+# Maintainer: Sergej Pupykin <pupykin.s+arch@gmail.com>
+# Contributor: Michal Bozon <michal.bozon__at__gmail.com>
+
+# 06-05-2013 Raspi-Build: Maciej Szeptuch (Neverous) <neverous@neverous.info>
+
+pkgname=libyaml
+pkgver=0.1.4
+pkgrel=2
+pkgdesc="YAML 1.1 library"
+arch=('armv6zk')
+url="http://pyyaml.org/wiki/LibYAML"
+license=('MIT')
+source=(http://pyyaml.org/download/libyaml/yaml-$pkgver.tar.gz)
+md5sums=('36c852831d02cf90508c29852361d01b')
+
+build() {
+    cd "$srcdir/yaml-$pkgver"
+    ./configure --prefix=/usr
+    make
+}
+
+package() {
+    cd "$srcdir/yaml-$pkgver"
+    make DESTDIR="$pkgdir" install
+    install -m644 -D LICENSE $pkgdir/usr/share/licenses/$pkgname/LICENSE
+}
+
