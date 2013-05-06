@@ -562,6 +562,10 @@ RB_AUTOBUILD_PACKAGES=(
 'extra/fcgi'
 'community/fcgiwrap'
 'community/cgit'
+'aur/gitolite-git'
+'aur/libcofi_rpi-git'
+'core/which'
+'aur/phppgadmin-git'
 )
 
 # RUN
