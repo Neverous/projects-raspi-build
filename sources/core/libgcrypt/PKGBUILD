@@ -7,7 +7,7 @@ pkgname=libgcrypt
 pkgver=1.5.2
 pkgrel=1
 pkgdesc="a general purpose crypto library based on the code used"
-arch=(armv6zk)
+arch=(${RB_TARGET_ARCH})
 url="http://www.gnupg.org"
 license=('LGPL')
 depends=('libgpg-error>=1.10-2')

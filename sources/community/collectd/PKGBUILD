@@ -10,7 +10,7 @@ pkgver=5.3.0
 pkgrel=1
 pkgdesc='Daemon which collects system performance statistics periodically'
 url='http://collectd.org/'
-arch=('armv6zk')
+arch=(${RB_TARGET_ARCH})
 license=('GPL')
 
 optdepends=('curl: apache, ascent, curl, nginx, and write_http plugins'

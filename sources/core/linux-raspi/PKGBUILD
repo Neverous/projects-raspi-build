@@ -10,7 +10,7 @@ _kernelname=${pkgname#linux}
 _basekernel=3.9
 pkgver=${_basekernel}.0
 pkgrel=1
-arch=('armv6zk')
+arch=(${RB_TARGET_ARCH})
 url="http://www.kernel.org/"
 license=('GPL2')
 makedepends=('xmlto' 'docbook-xsl' 'uboot-mkimage' 'git' 'python2')
@@ -224,4 +224,4 @@ md5sums=('d7409c8efb99451863ad0a25e8dbc624'
          '9335d1263fd426215db69841a380ea26'
          'a00e424e2fbb8c5a5f77ba2c4871bed4'
          '2f82dbe5752af65ff409d737caf11954'
-         '56e2e87cfbf6356f1f12b9bc4d365313')
+         'SKIP')

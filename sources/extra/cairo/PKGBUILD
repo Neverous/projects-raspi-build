@@ -9,7 +9,7 @@ pkgname=cairo
 pkgver=1.12.14
 pkgrel=3
 pkgdesc="Cairo vector graphics library"
-arch=(armv6zk)
+arch=(${RB_TARGET_ARCH})
 license=('LGPL' 'MPL')
 url="http://cairographics.org/"
 # depends=('libpng' 'libxrender' 'libxext' 'fontconfig' 'pixman>=0.28.0' 'glib2' 'mesa>=9.1' 'libgl' 'sh') 

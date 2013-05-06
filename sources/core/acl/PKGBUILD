@@ -7,7 +7,7 @@ pkgname=acl
 pkgver=2.2.51
 pkgrel=3
 pkgdesc="Access control list utilities, libraries and headers"
-arch=('armv6zk')
+arch=(${RB_TARGET_ARCH})
 url="http://savannah.nongnu.org/projects/acl"
 license=('LGPL')
 depends=('attr>=2.4.46')

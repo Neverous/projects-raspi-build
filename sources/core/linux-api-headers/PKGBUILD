@@ -13,7 +13,7 @@ conflicts=('linux-api-headers')
 replaces=('linux-api-headers')
 pkgrel=1
 pkgdesc="Kernel headers sanitized for use in userspace"
-arch=('armv6zk')
+arch=(${RB_TARGET_ARCH})
 url="http://www.gnu.org/software/libc"
 license=('GPL2')
 source=(raspberrypi-linux-3.9.tar.gz)
@@ -35,4 +35,4 @@ package() {
     find ${pkgdir} \( -name .install -o -name ..install.cmd \) -delete
 }
 
-md5sums=('56e2e87cfbf6356f1f12b9bc4d365313')
+md5sums=('SKIP')

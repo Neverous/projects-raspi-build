@@ -9,7 +9,7 @@ pkgname=gpgme
 pkgver=1.4.0
 pkgrel=1
 pkgdesc="A C wrapper library for GnuPG"
-arch=('armv6zk')
+arch=(${RB_TARGET_ARCH})
 url="http://www.gnupg.org/related_software/gpgme/"
 license=('GPL')
 depends=('libgpg-error' 'pth' 'gnupg>=2')

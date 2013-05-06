@@ -13,7 +13,7 @@ pkgname=binutils
 pkgver=2.23.2
 pkgrel=2
 pkgdesc="A set of programs to assemble and manipulate binary and object files"
-arch=('armv6zk')
+arch=(${RB_TARGET_ARCH})
 url="http://www.gnu.org/software/binutils/"
 license=('GPL')
 groups=('base-devel')
@@ -50,7 +50,7 @@ build() {
         --enable-plugins --enable-threads \
         --with-pic --enable-shared \
         --disable-werror \
-        --host=arm-raspi-linux-gnueabi --build=arm-raspi-linux-gnueabi
+        --host=${RB_TARGET_HOST} --build=${RB_TARGET_HOST}
 
     # check the host environment and makes sure all the necessary tools are available
     make configure-host

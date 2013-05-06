@@ -7,7 +7,7 @@
 pkgname=python2-sqlalchemy-0.7.9
 pkgver=0.7.9
 pkgrel=3
-arch=('armv6zk') # python2 package contain .so
+arch=(${RB_TARGET_ARCH}) # python2 package contain .so
 url="http://www.sqlalchemy.org/"
 license=('custom: MIT')
 makedepends=('python' 'python2' 'python-distribute' 'python2-distribute' 'python-nose' 'python2-nose')

@@ -8,7 +8,7 @@ pkgname=libxml2
 pkgver=2.8.0
 pkgrel=1
 pkgdesc="XML parsing library, version 2"
-arch=(armv6zk)
+arch=(${RB_TARGET_ARCH})
 license=('custom')
 depends=('zlib>=1.2.4' 'readline>=6.1' 'ncurses>=5.7' 'xz')
 makedepends=('python2')

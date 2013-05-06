@@ -7,7 +7,7 @@
 pkgname=libsigsegv
 pkgver=2.10
 pkgrel=1
-arch=('armv6zk')
+arch=(${RB_TARGET_ARCH})
 pkgdesc="Page fault detection library"
 url="http://www.gnu.org/software/libsigsegv/"
 license=('GPL2')

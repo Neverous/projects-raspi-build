@@ -13,7 +13,7 @@ pkgver=1.6.8
 pkgrel=6
 pkgdesc="Freedesktop.org message bus system"
 url="http://www.freedesktop.org/Software/dbus"
-arch=(armv6zk)
+arch=(${RB_TARGET_ARCH})
 license=('GPL' 'custom')
 # do not depend on systemd to avoid circular dep,
 # dep on shadow for install scriptlet FS#29341

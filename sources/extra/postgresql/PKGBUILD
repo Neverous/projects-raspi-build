@@ -9,7 +9,7 @@ pkgname=('postgresql-libs' 'postgresql')
 pkgver=9.2.4
 _majorver=${pkgver%.*}
 pkgrel=1
-arch=('armv6zk')
+arch=(${RB_TARGET_ARCH})
 url="http://www.postgresql.org/"
 license=('custom:PostgreSQL')
 makedepends=('krb5' 'libxml2' 'python2' 'perl' 'openssl>=1.0.0')

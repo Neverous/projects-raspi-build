@@ -26,7 +26,7 @@ _linaro_gcc=4.8
 _linaro_ver=2013.04
 _snapshot=linaro-${_linaro_gcc}-${_linaro_ver}
 pkgdesc="The GNU Compiler Collection"
-arch=('armv6zk')
+arch=(${RB_TARGET_ARCH})
 license=('GPL' 'LGPL' 'FDL' 'custom')
 url="http://gcc.gnu.org"
 makedepends=('binutils>=2.23' 'libmpc' 'cloog' 'doxygen')
@@ -78,7 +78,7 @@ build() {
         --with-linker-hash-style=gnu --disable-install-libiberty \
         --disable-multilib --disable-libssp --disable-werror \
         --enable-checking=release \
-        --with-arch=armv6zk --with-float=hard --with-fpu=vfp --with-cpu=arm1176jzf-s --host=arm-raspi-linux-gnueabi --build=arm-raspi-linux-gnueabi --target=arm-raspi-linux-gnueabi
+        --with-arch=${RB_TARGET_ARCH} --with-float=hard --with-fpu=vfp --with-cpu=arm1176jzf-s --host=${RB_TARGET_HOST} --build=${RB_TARGET_HOST} --target=${RB_TARGET_HOST}
     make
 
     # make documentation

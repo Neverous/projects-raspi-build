@@ -8,7 +8,7 @@ pkgname=dosfstools
 pkgver=3.0.16
 pkgrel=1
 pkgdesc="DOS filesystem utilities"
-arch=(armv6zk)
+arch=(${RB_TARGET_ARCH})
 depends=('glibc')
 #source=(http://www.daniel-baumann.ch/software/dosfstools/$pkgname-$pkgver.tar.xz)
 # using debian source, main page is down since quite some time

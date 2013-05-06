@@ -8,7 +8,7 @@ pkgname=libxcb
 pkgver=1.9
 pkgrel=3
 pkgdesc="X11 client-side library"
-arch=('armv6zk')
+arch=(${RB_TARGET_ARCH})
 url="http://xcb.freedesktop.org/"
 depends=('xcb-proto>=1.7' 'libxdmcp' 'libxau')
 makedepends=('pkgconfig' 'libxslt' 'python2')

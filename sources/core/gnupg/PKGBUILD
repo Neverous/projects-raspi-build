@@ -12,7 +12,7 @@ pkgrel=7
 pkgdesc='Complete and free implementation of the OpenPGP standard'
 url='http://www.gnupg.org/'
 license=('GPL')
-arch=('armv6zk')
+arch=(${RB_TARGET_ARCH})
 optdepends=('curl: gpg2keys_curl'
             'libldap: gpg2keys_ldap'
             'libusb-compat: scdaemon')

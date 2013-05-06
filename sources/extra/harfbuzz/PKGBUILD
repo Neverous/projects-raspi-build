@@ -7,7 +7,7 @@ pkgname=harfbuzz
 pkgver=0.9.16
 pkgrel=1
 pkgdesc="OpenType text shaping engine."
-arch=('armv6zk')
+arch=(${RB_TARGET_ARCH})
 url="http://www.freedesktop.org/wiki/Software/HarfBuzz"
 license=('MIT')
 depends=('icu' 'glib2' 'freetype2' 'graphite>=1.2.0')

@@ -17,7 +17,7 @@ pkgname=glibc
 pkgver=2.17
 pkgrel=5
 pkgdesc="GNU C Library"
-arch=('armv6zk')
+arch=(${RB_TARGET_ARCH})
 url="http://www.gnu.org/software/libc"
 license=('GPL' 'LGPL')
 groups=('base')
@@ -80,7 +80,7 @@ build() {
         --enable-bind-now --disable-profile \
         --enable-stackguard-randomization \
         --disable-multi-arch \
-        --host=arm-raspi-linux-gnueabi --build=arm-raspi-linux-gnueabi
+        --host=${RB_TARGET_HOST} --build=${RB_TARGET_HOST}
 
     # build libraries with hardening disabled
     echo "build-programs=no" >> configparms
@@ -164,7 +164,7 @@ md5sums=('87bf675c8ee523ebda4803e8e1cec638'
          'fb99380d94598cc76d793deebf630022'
          '56d5f2c09503a348281a20ae404b7de3'
          '200acc05961b084ee00dde919e64f82d'
-         '8d733818d0ba4995a5c82d6a96576a6d'
+         'b88bd8289ac0a772a0219f8d9dd82b85'
          'fa192d063312907797eb48f59da99588'
          'dee46cbd2e544a61c263a0af39cc934c'
          'ad8a9af15ab7eeaa23dc7ee85024af9f'

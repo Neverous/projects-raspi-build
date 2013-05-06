@@ -13,7 +13,7 @@ pkgname=pacman
 pkgver=4.1.0
 pkgrel=2
 pkgdesc="A library-based package manager with dependency support"
-arch=('armv6zk')
+arch=(${RB_TARGET_ARCH})
 url="http://www.archlinux.org/pacman/"
 license=('GPL')
 groups=('base' 'base-devel')
@@ -61,9 +61,9 @@ package() {
     # install Arch specific stuff
     install -dm755 $pkgdir/etc
     install -m644 $srcdir/pacman.conf $pkgdir/etc/pacman.conf
-    mycarch="armv6zk"
-    mychost="arm-raspi-linux-gnueabi"
-    myflags="-march=armv6zk -mcpu=arm1176jzf-s -mtune=arm1176jzf-s -mfpu=vfp -mfloat-abi=hard -mhard-float "
+    mycarch=${RB_TARGET_ARCH}
+    mychost=${RB_TARGET_HOST}
+    myflags=${RB_TARGET_CFLAGS}
     install -m644 $srcdir/makepkg.conf $pkgdir/etc/
     # set things correctly in the default conf file
     sed -i $pkgdir/etc/makepkg.conf \
