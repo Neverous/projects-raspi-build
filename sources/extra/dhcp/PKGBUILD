@@ -17,7 +17,7 @@ license=('custom:isc-dhcp')
 url="https://www.isc.org/software/dhcp"
 makedepends=('bash' 'iproute2')
 source=(ftp://ftp.isc.org/isc/${pkgbase}/${_pkgver}/${pkgbase}-${_pkgver}.tar.gz{,.asc}
-        dhcp4 dhcp dhcpd4.service
+        dhcp dhcpd4.service
         dhcp-4.2.5-client_script-1.patch
         dhcp-4.2.5-missing_ipv6-1.patch)
 
@@ -84,7 +84,6 @@ package_dhclient(){
 }
 md5sums=('6489e919ac093d17249270ee9be1020e'
          'SKIP'
-         'c49b1497837ba56c54e401a66e1bab9b'
          'e3ce6d36ce97367a27f82e92a6124a15'
          '439ee2f145a1e86dd644cb94a854f8e7'
          '9e4dcf90beec15bfcb6631809cdcc780'

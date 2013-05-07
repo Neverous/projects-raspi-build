@@ -14,10 +14,8 @@ url="http://members.home.nl/p.a.rombouts/pdnsd/"
 license=('GPL')
 depends=('glibc')
 source=(http://members.home.nl/p.a.rombouts/pdnsd/releases/pdnsd-$_pkgver-par.tar.gz
-        rc.d
         service)
 md5sums=('2f3e705d59a0f9308ad9504b24400769'
-         '3670bd47c9303fbb655d9216715512de'
          'fad5e518d126b29fc947941d57a0a494')
 
 build() {

@@ -78,7 +78,7 @@ package() {
     mkdir "$pkgdir/"etc/exports.d
     mkdir -m 555 "$pkgdir/"var/lib/nfs/rpc_pipefs
 }
-md5sums=('6e7d97de51e428a0b8698c16ca23db77'
+md5sums=('fb48630b7c145fb9d6602a79c6eaab11'
          '2f251466add7c69f05dca37af5ee6883'
          'c3f7ca3d4a64fe9739323fccebe1884c'
          'ff585faf410a62c4333a027c50b56bae'

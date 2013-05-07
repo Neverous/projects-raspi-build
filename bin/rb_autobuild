@@ -349,7 +349,7 @@ function install_package()
 {
     src="$@";
     run ${src} cd "${RB_WORKDIR}/build/${src}" || return 1;
-    run ${src} rb_install --noconfirm *.pkg.* || rb_install --force *.pkg.* || return 1;
+    run ${src} rb_install --noconfirm *.pkg.* || rb_install --force -dd *.pkg.* || return 1;
     run ${src} touch .installed || return 1;
     return 0;
 }
@@ -588,6 +588,20 @@ RB_AUTOBUILD_PACKAGES=(
 'community/python-beautifulsoup4'
 'community/python2-beautifulsoup3'
 'aur/flexget'
+'community/libestr'
+'community/libee'
+'extra/json-c'
+'extra/nettle'
+'extra/libtasn1'
+'extra/p11-kit'
+'extra/gnutls'
+'community/rsyslog'
+'community/fail2ban'
+'core/grep'
+'core/make'
+'core/patch'
+'core/hdparm'
+'core/procinfo-ng'
 )
 
 # RUN

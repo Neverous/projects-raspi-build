@@ -43,4 +43,4 @@ package() {
     make DESTDIR="$pkgdir" -C tools install
     install -Dm644 doc/COPYING "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
 }
-sha256sums=('ec0293cf7763592f8a665b489b1a38bd294017f4a15f9ce1eef2716e5d0a53ee')
+sha256sums=('e23f24684739de8c0b497b1901138978aaa0f35557df1782adc4a85c6650547f')

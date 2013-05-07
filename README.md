@@ -235,7 +235,7 @@ Well, I started this "project" when there only was armv5 image from [Arch Linux 
 * community/rtorrent
 * extra/shared-mime-info
 * extra/cmake
-#'extra/mariadb' # wont build with sb2 so far
+* extra/mariadb  **wont build with sb2 so far**
 * extra/postgresql
 * extra/libjpeg-turbo
 * extra/libpng
@@ -325,3 +325,17 @@ Well, I started this "project" when there only was armv5 image from [Arch Linux 
 * community/python-beautifulsoup4
 * community/python2-beautifulsoup3
 * aur/flexget
+* community/libestr
+* community/libee
+* extra/json-c
+* extra/nettle
+* extra/libtasn1
+* extra/p11-kit
+* extra/gnutls
+* community/rsyslog
+* community/fail2ban
+* core/grep
+* core/make
+* core/patch
+* core/hdparm
+* core/procinfo-ng
