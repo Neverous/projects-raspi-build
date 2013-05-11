@@ -297,6 +297,7 @@ Well, I started this "project" when there only was armv5 image from [Arch Linux 
 * community/f2fs-tools
 * extra/dosfstools
 * extra/fcgi
+* community/spawn-fcgi
 * community/fcgiwrap
 * community/cgit
 * aur/gitolite-git

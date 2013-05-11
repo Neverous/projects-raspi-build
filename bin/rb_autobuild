@@ -560,6 +560,7 @@ RB_AUTOBUILD_PACKAGES=(
 'community/f2fs-tools'
 'extra/dosfstools'
 'extra/fcgi'
+'community/spawn-fcgi'
 'community/fcgiwrap'
 'community/cgit'
 'aur/gitolite-git'
