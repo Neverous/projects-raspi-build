@@ -8,20 +8,20 @@ pkgbase=linux-raspi
 pkgname=('linux-raspi')
 _kernelname=${pkgname#linux}
 _basekernel=3.9
-pkgver=${_basekernel}.1
+pkgver=${_basekernel}.3
 pkgrel=1
 arch=(${RB_TARGET_ARCH})
 url="http://www.kernel.org/"
 license=('GPL2')
 makedepends=('xmlto' 'docbook-xsl' 'uboot-mkimage' 'git' 'python2')
 options=('!strip')
-source=('config'
+source=("config.${_basekernel}"
         'change-default-console-loglevel.patch'
         'usb-add-reset-resume-quirk-for-several-webcams.patch'
         'args-uncompressed.txt'
         'boot-uncompressed.txt'
         'imagetool-uncompressed.py'
-        'raspberrypi-linux-3.9.tar.gz')
+        "raspberrypi-linux-${_basekernel}.tar.gz")
 
 build() {
     cd "${srcdir}/linux"
@@ -39,7 +39,7 @@ build() {
     cp ${srcdir}/boot-uncompressed.txt arch/arm/boot/
     cp ${srcdir}/imagetool-uncompressed.py arch/arm/boot/
 
-    cat "${srcdir}/config" > ./.config
+    cat "${srcdir}/config.${_basekernel}" > ./.config
 
     # set extraversion to pkgrel
     sed -ri "s|^(EXTRAVERSION =).*|\1 -${pkgrel}|" Makefile
@@ -52,10 +52,10 @@ build() {
 
     # load configuration
     # Configure the kernel.
-    #make nconfig # CLI menu for configuration
+    make nconfig # CLI menu for configuration
 
     # Copy back our configuration (use with new kernel version)
-    #cp ./.config ../../config.${pkgver}
+    cp ./.config ../../config.${_basekernel}
 
     ####################
     # stop here
@@ -218,10 +218,10 @@ package_linux-headers-raspi() {
     # remove unneeded architectures
     rm -rf "${pkgdir}"/usr/src/linux-${_kernver}/arch/{alpha,arm26,avr32,blackfin,cris,frv,h8300,ia64,m32r,m68k,m68knommu,mips,microblaze,mn10300,parisc,powerpc,ppc,s390,sh,sh64,sparc,sparc64,um,v850,x86,xtensa}
 }
-md5sums=('fd93389bd889153e191992f41b4f8021'
+md5sums=('SKIP'
          '9d3c56a4b999c8bfbd4018089a62f662'
          'd00814b57448895e65fbbc800e8a58ba'
          '9335d1263fd426215db69841a380ea26'
          'a00e424e2fbb8c5a5f77ba2c4871bed4'
          '2f82dbe5752af65ff409d737caf11954'
-         'e2440f91a21615e2665c116c0f5c2743')
+         'SKIP')

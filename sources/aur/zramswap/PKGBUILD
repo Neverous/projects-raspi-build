@@ -1,0 +1,27 @@
+# Maintainer: ifaigios <ifaigios_at_gmail_dot_com>
+# Contributor: Alyssa Hung <deciare@isisiew.org>
+# Contributor: Matt Brennan
+# Contributor: falconindy
+# Contributor: adee
+# Contributor: mystilleef
+
+# 15-05-2013 Raspi-Build: Maciej Szeptuch (Neverous) <neverous@neverous.info>
+#   - removed rc.d script
+
+pkgname=zramswap
+pkgver=1
+pkgrel=1
+pkgdesc="Sets up zram-based swap devices on boot"
+arch=('any')
+url="http://en.wikipedia.org/wiki/ZRam"
+license=('GPL')
+install="zramswap.install"
+source=("zramctrl"
+        "zramswap.service")
+md5sums=('e7e8b6462120052a91ad39fd42ef3cb1'
+         '560b724aaaf50678ed1c902cd1517109')
+
+package() {
+  install -Dm755 zramctrl $pkgdir/usr/lib/systemd/scripts/zramctrl
+  install -Dm644 zramswap.service $pkgdir/usr/lib/systemd/system/zramswap.service
+}
