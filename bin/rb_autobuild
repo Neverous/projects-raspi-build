@@ -18,6 +18,10 @@ function main()
             prepare;
         ;;
 
+        unpack)
+            unpack;
+        ;;
+
         *|build)
             build;
         ;;
@@ -71,7 +75,7 @@ function prepare()
     IFS=$OLDIFS
 }
 
-function build()
+function unpack()
 {
     OLDIFS=$IFS
     IFS=$(echo -ne "\n\b")
@@ -80,12 +84,42 @@ function build()
     for package in ${RB_AUTOBUILD_PACKAGES[@]}; do
         let c=$c+1;
         pkgname="${white}${package}${none}";
+        msg_stat " ($c/${count}) Unpacking sources for ${pkgname}...";
+
+        if ! unpack_source "${package}"; then
+            msg_error "Copying failed!";
+            exit 2;
+        fi;
+
+        msg_done;
+    done;
+
+    IFS=$OLDIFS
+}
+
+function build()
+{
+    OLDIFS=$IFS
+    IFS=$(echo -ne "\n\b")
+    count=${#RB_AUTOBUILD_PACKAGES[@]};
+    c=0;
+    for package in ${RB_AUTOBUILD_PACKAGES[@]}; do
+        let c=$c+1;
+        if [[ ${package:0:1} == "#" ]]; then
+            msg_stat "${white}${package:1}...${none}";
+            if ! ask_continue; then
+                exit 1;
+            break;
+
+            continue;
+        fi;
+        pkgname="${white}${package}${none}";
         msg_stat " ($c/${count}) Building package ${pkgname}...";
         if ! check_source ${package}; then
             msg_error "Missing source files for ${pkgname}!";
             exit 2;
         fi;
-        
+
         check_package ${package};
         case $? in
             2)
@@ -139,7 +173,8 @@ function build()
 
                     1)
                         msg_skip "Skipping package ${pkgname}.";
-                        run ${package} touch "${RB_WORKDIR}/build/${package}/.skipped"                        skip=1;
+                        run ${package} touch "${RB_WORKDIR}/build/${package}/.skipped";
+                        skip=1;
                         break;
                     ;;
 
@@ -197,7 +232,7 @@ function msg_error()
 function check_source()
 {
     src="$@";
-    if [[ -d "${RB_WORKDIR}/src/${src}" ]]; then
+    if [[ -d "${RB_WORKDIR}/temp/src/${src}" ]]; then
         return 0;
     fi;
 
@@ -208,9 +243,18 @@ function copy_source()
 {
     name=$1;
     src=$2;
-    mkdir -p "${RB_WORKDIR}/src/${name}" || return 1;
-    rmdir "${RB_WORKDIR}/src/${name}" || return 1;
-    cp -r "${src}/${name}" "${RB_WORKDIR}/src/${name}" || return 1;
+    mkdir -p "${RB_WORKDIR}/temp/src/${name}" || return 1;
+    rmdir "${RB_WORKDIR}/temp/src/${name}" || return 1;
+    cp -r "${src}/${name}" "${RB_WORKDIR}/temp/src/${name}" || return 1;
+    return 0;
+}
+
+function unpack_source()
+{
+    name=$1;
+    mkdir -p "${RB_WORKDIR}/temp/src/${name}" || return 1;
+    rmdir "${RB_WORKDIR}/temp/src/${name}" || return 1;
+    tar xf "${RB_REPODIR}/sources/${name}"* -C "${RB_WORKDIR}/build/${name%%/*}/" || return 1;
     return 0;
 }
 
@@ -243,16 +287,31 @@ function run()
     if [[ ${RB_AUTOBUILD_VERBOSE} == 1 ]]; then
         ${program};
     else
-        ${program} &>> "${RB_WORKDIR}/src/${src}/build.log";
+        ${program} &>> "${RB_WORKDIR}/temp/src/${src}/build.log";
     fi;
 }
 
 function show_log()
 {
     src="$@";
-    if [[ -f "${RB_WORKDIR}/src/${src}/build.log" ]]; then
-        cat "${RB_WORKDIR}/src/${src}/build.log";
+    if [[ -f "${RB_WORKDIR}/temp/src/${src}/build.log" ]]; then
+        cat "${RB_WORKDIR}/temp/src/${src}/build.log";
     fi;
+}
+
+function ask_continue()
+{
+    response="";
+    while [[ ${response} != "c" && ${response} != "e" ]]; do
+        echo -n "What you want to do? [${white}C${none}ontinue/${white}E${none}xit] ";
+        read response;
+    done;
+
+    if [[ ${response} = "c" ]]; then
+        return 1;
+    fi;
+
+    return 0;
 }
 
 function ask_copy()
@@ -320,15 +379,15 @@ function prepare_package()
     fi;
 
     mkdir -p "${RB_WORKDIR}/build/${src}" || return 1;
-    ln -s "${RB_WORKDIR}/src/${src}/"* "${RB_WORKDIR}/build/${src}/" || return 1;
+    ln -s "${RB_WORKDIR}/temp/src/${src}/"* "${RB_WORKDIR}/build/${src}/" || return 1;
     return 0;
 }
 
 function download_sources()
 {
     src="$@";
-    rm -f "${RB_WORKDIR}/src/${src}/build.log";
-    run ${src} cd "${RB_WORKDIR}/src/${src}" || return 1;
+    rm -f "${RB_WORKDIR}/temp/src/${src}/build.log";
+    run ${src} cd "${RB_WORKDIR}/temp/src/${src}" || return 1;
     run ${src} rb_clean || return 1;
     run ${src} rb_makepkg --verifysource || return 1;
     run ${src} rm -rf src || return 1;
@@ -395,13 +454,13 @@ RB_AUTOBUILD_PACKAGES=(
 'core/hwids'
 'extra/sqlite'
 'core/gdbm'
-'Change perl binding in scratchbox2'
+'#Change perl binding in scratchbox2'
 'core/perl'
 'core/openssl'
 'core/bzip2'
-'Change python2 binding in scratchbox2'
+'#Change python2 binding in scratchbox2'
 'extra/python2'
-'Change python binding in scratchbox2'
+'#Change python binding in scratchbox2'
 'extra/python'
 'core/glib2'
 'core/pkg-config'
@@ -420,7 +479,7 @@ RB_AUTOBUILD_PACKAGES=(
 'core/tar'
 'core/sed'
 'core/libtool'
-'Add libtool binding in scratchbox2'
+'#Add libtool binding in scratchbox2'
 'core/gawk'
 'extra/libsigsegv'
 'core/diffutils'
@@ -441,6 +500,7 @@ RB_AUTOBUILD_PACKAGES=(
 'core/netctl'
 'core/keyutils'
 'core/e2fsprogs'
+'core/xfsprogs'
 'core/libedit'
 'core/krb5'
 'core/dnssec-anchors'
@@ -473,6 +533,7 @@ RB_AUTOBUILD_PACKAGES=(
 'core/iputils'
 'core/libnl'
 'core/libpcap'
+'extra/tcpdump'
 'extra/nmap'
 'core/gzip'
 'core/logrotate'
@@ -498,7 +559,6 @@ RB_AUTOBUILD_PACKAGES=(
 'community/rtorrent'
 'extra/shared-mime-info'
 'extra/cmake'
-#'extra/mariadb' # wont build with sb2 so far
 'extra/postgresql'
 'extra/libjpeg-turbo'
 'extra/libpng'
@@ -545,6 +605,7 @@ RB_AUTOBUILD_PACKAGES=(
 'extra/libxext'
 'extra/cairo'
 'extra/pango'
+'community/libdbi'
 'extra/rrdtool'
 'extra/lm_sensors'
 'community/collectd'
@@ -588,6 +649,8 @@ RB_AUTOBUILD_PACKAGES=(
 'extra/python-lxml'
 'community/python-beautifulsoup4'
 'community/python2-beautifulsoup3'
+'aur/python2-tvrage'
+'aur/python2-jsonschema'
 'aur/flexget'
 'community/libestr'
 'community/libee'
@@ -603,6 +666,19 @@ RB_AUTOBUILD_PACKAGES=(
 'core/patch'
 'core/hdparm'
 'core/procinfo-ng'
+
+'community/libpqxx'
+'aur/nullmailer'
+'community/bfgminer'
+'community/tor'
+'aur/arm'
+'extra/swig'
+'core/wireless_tools'
+'core/wpa_supplicant'
+'community/python2-m2crypto'
+'core/wireless-regdb'
+'core/iw'
+'core/crda'
 )
 
 # RUN

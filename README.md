@@ -59,16 +59,16 @@ Well, I started this "project" when there only was armv5 image from [Arch Linux 
 
 ### 3. Build packages
 * I'm getting PKGBUILDs from [ABS](http://wiki.archlinux.org/index.php/Arch_Build_System) or [Arch Linux ARM repo](http://github.com/archlinuxarm/PKGBUILDs) or [AUR](http://aur.archlinux.org/)
-* There is `rb\_autobuild` script that tries to automate part of the build **EXPERIMENTAL**
-* Ones adjusted and prepared for `rb\_autobuild` are in `PKGBUILDs/` directory
+* There is `rb_autobuild` script that tries to automate part of the build **EXPERIMENTAL**
+* Ones adjusted and prepared for `rb_autobuild` are in `sources/` directory
 * Use `rb_makepkg` instead of `makepkg` - it has patched support for scratchbox2 instead of fakeroot and uses `makepkg.conf` from `config/`
 
 #### PACKAGE BUILDING ORDER:
 * alarm/raspberrypi-firmware
-* core/linux-api-headers (**force-install**)
+* core/linux-api-headers ( **force-install** )
 * core/tzdata
 * core/iana-etc
-* core/glibc (**force-install**)
+* core/glibc ( **force-install** )
 * core/attr
 * core/acl
 * core/libcap
@@ -76,13 +76,13 @@ Well, I started this "project" when there only was armv5 image from [Arch Linux 
 * core/ncurses
 * core/readline
 * core/bash
-* core/gmp (**force-install**)
+* core/gmp ( **force-install** )
 * core/mpfr
 * core/libmpc
 * core/isl
 * core/cloog
 * core/zlib
-* core/binutils (**force-install**)
+* core/binutils ( **force-install** )
 * core/gcc
 * core/pambase
 * core/libgssglue
@@ -149,6 +149,7 @@ Well, I started this "project" when there only was armv5 image from [Arch Linux 
 * core/netctl
 * core/keyutils
 * core/e2fsprogs
+* core/xfsprogs
 * core/libedit
 * core/krb5
 * core/dnssec-anchors
@@ -325,6 +326,8 @@ Well, I started this "project" when there only was armv5 image from [Arch Linux 
 * extra/python-lxml
 * community/python-beautifulsoup4
 * community/python2-beautifulsoup3
+* aur/python2-tvrage
+* aur/python2-jsonschema
 * aur/flexget
 * community/libestr
 * community/libee
@@ -340,3 +343,7 @@ Well, I started this "project" when there only was armv5 image from [Arch Linux 
 * core/patch
 * core/hdparm
 * core/procinfo-ng
+* community/libpqxx
+* aur/nullmailer
+* community/bfgminer
+* community/tor
