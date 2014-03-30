@@ -39,15 +39,15 @@ Well, I started this "project" when there only was armv5 image from [Arch Linux 
                 {prefix = "/usr/lib/pymodules", use_orig_path = true, readonly = true},
                 {prefix = "/usr/lib/pyshared", use_orig_path = true, readonly = true},
                 {prefix = "/usr/lib/python", use_orig_path = true, readonly = true},
-+               -- Change upper python binings to this before compiling python
++               -- Change above python binings to this before compiling python
 +               --{prefix = "/usr/bin/python", map_to = target_root},
 +               --{prefix = "/usr/bin/python2", map_to = target_root},
                 {prefix = "/usr/lib/perl", map_to = tools},
-+               -- Change up to this before compiling and installing perl in sysroot
++               -- Change above line to this before compiling and installing perl in sysroot
 +               --{prefix = "/usr/bin/perl", map_to = target_root},
 +               --{prefix = "/usr/share/perl5", map_to = target_root},
 +               {prefix = "/opt", map_to = target_root},
-+               -- Add bottom after compiling and installing libtool in sysroot
++               -- Add below after compiling and installing libtool in sysroot
 +               -- {prefix = "/usr/bin/libtool", map_to = target_root},
 ```
 
