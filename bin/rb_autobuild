@@ -1,6 +1,6 @@
 #!/bin/bash
-
-RB_AUTOBUILD_VERBOSE=0
+RB_AUTOBUILD_VERBOSE=${RB_AUTOBUILD_VERBOSE:-0};
+LANG=C
 
 # COLORS
 red=$(tput setaf 1);
@@ -22,20 +22,33 @@ function main()
             unpack;
         ;;
 
-        *|build)
+        pack)
+            pack;
+        ;;
+
+        build)
             build;
+        ;;
+
+        *)
+            echo "Usage: $0 unpack|prepare|build|pack";
+            exit 1;
         ;;
     esac;
 }
 
 function prepare()
 {
-    OLDIFS=$IFS
-    IFS=$(echo -ne "\n\b")
+    OLDIFS=$IFS;
+    IFS=$(echo -ne "\n\b");
     count=${#RB_AUTOBUILD_PACKAGES[@]};
     c=0;
     for package in ${RB_AUTOBUILD_PACKAGES[@]}; do
         let c=$c+1;
+        if [[ ${package:0:1} == "#" ]]; then
+            continue;
+        fi;
+
         pkgname="${white}${package}${none}";
         msg_stat " ($c/${count}) Preparing sources for ${pkgname}...";
         if check_source "${package}"; then
@@ -49,11 +62,11 @@ function prepare()
         case $? in
             3)
                 msg_stat " ($c/${count}) Copying sources for ${pkgname} from ABS...";
-                src=${RB_ABSDIR}
+                src=${RB_ABSDIR};
             ;;
             2)
                 msg_stat " ($c/${count}) Copying sources for ${pkgname} from ALARM...";
-                src=${RB_ALARMDIR}
+                src=${RB_ALARMDIR};
             ;;
             1)
                 msg_skip "Skipping package ${pkgname}.";
@@ -72,35 +85,78 @@ function prepare()
         msg_done;
     done;
 
-    IFS=$OLDIFS
+    IFS=$OLDIFS;
 }
 
 function unpack()
 {
-    OLDIFS=$IFS
-    IFS=$(echo -ne "\n\b")
+    OLDIFS=$IFS;
+    IFS=$(echo -ne "\n\b");
     count=${#RB_AUTOBUILD_PACKAGES[@]};
     c=0;
     for package in ${RB_AUTOBUILD_PACKAGES[@]}; do
         let c=$c+1;
+        if [[ ${package:0:1} == "#" ]]; then
+            continue;
+        fi;
+
         pkgname="${white}${package}${none}";
         msg_stat " ($c/${count}) Unpacking sources for ${pkgname}...";
 
-        if ! unpack_source "${package}"; then
-            msg_error "Copying failed!";
-            exit 2;
-        fi;
+        unpack_source "${package}";
+        case $? in
+            0)
+                msg_done;
+            ;;
 
-        msg_done;
+            1)
+                msg_skip "Source for ${pkgname} already unpacked!";
+            ;;
+            2)
+                msg_error "Copying failed!";
+                exit 2;
+            ;;
+        esac
     done;
 
-    IFS=$OLDIFS
+    IFS=$OLDIFS;
+}
+
+function pack()
+{
+    OLDIFS=$IFS;
+    IFS=$(echo -ne "\n\b");
+    count=${#RB_AUTOBUILD_PACKAGES[@]};
+    c=0;
+    for package in ${RB_AUTOBUILD_PACKAGES[@]}; do
+        let c=$c+1;
+        if [[ ${package:0:1} == "#" ]]; then
+            continue;
+        fi;
+
+        pkgname="${white}${package}${none}";
+        msg_stat " ($c/${count}) Packing sources for ${pkgname}...";
+
+        pack_source "${package}";
+        case $? in
+            0)
+                msg_done;
+            ;;
+
+            1)
+                msg_error "Copying failed!";
+                exit 2;
+            ;;
+        esac
+    done;
+
+    IFS=$OLDIFS;
 }
 
 function build()
 {
-    OLDIFS=$IFS
-    IFS=$(echo -ne "\n\b")
+    OLDIFS=$IFS;
+    IFS=$(echo -ne "\n\b");
     count=${#RB_AUTOBUILD_PACKAGES[@]};
     c=0;
     for package in ${RB_AUTOBUILD_PACKAGES[@]}; do
@@ -109,7 +165,7 @@ function build()
             msg_stat "${white}${package:1}...${none}";
             if ! ask_continue; then
                 exit 1;
-            break;
+            fi;
 
             continue;
         fi;
@@ -161,7 +217,7 @@ function build()
             fi;
 
             if ! prepare_package ${package} || ! build_package ${package} || ! install_package ${package}; then
-                msg_error "Building error!"
+                msg_error "Building error!";
                 show_log ${package};
                 echo "Now you have time to fix the package ${package}.";
                 ask_retry;
@@ -190,14 +246,14 @@ function build()
         fi;
     done;
 
-    IFS=$OLDIFS
+    IFS=$OLDIFS;
 }
 
 # FUNCTIONS
-_prev=""
+_prev="";
 function msg_stat()
 {
-    date=$(date +"%Y-%m-%d %H:%M:%S")
+    date=$(date +"%Y-%m-%d %H:%M:%S");
     message="[${date}]$@";
     let align=$(tput cols)-${#message}+2*${#white}+2*${#none};
     _prev=$(printf "%s%${align}s" "${message}" "${white}[]${none}");
@@ -211,7 +267,7 @@ function msg_done_before()
 
 function msg_skip()
 {
-    date=$(date +"%Y-%m-%d %H:%M:%S")
+    date=$(date +"%Y-%m-%d %H:%M:%S");
     message="[${date}]$@";
     let align=$(tput cols)-${#message}+3*${#white}+2*${#none}+${#cyan};
     printf "\r%s%${align}s\n" "${message}" "${white}[${cyan}SK${white}]${none}";
@@ -224,7 +280,7 @@ function msg_done()
 
 function msg_error()
 {
-    date=$(date +"%Y-%m-%d %H:%M:%S")
+    date=$(date +"%Y-%m-%d %H:%M:%S");
     message="[${date}]$@";
     printf "\r%s\b\b\b\b%s\n%s\n" "${_prev}" "${white}[${red}ER${white}]${none}" "${message}";
 }
@@ -252,9 +308,20 @@ function copy_source()
 function unpack_source()
 {
     name=$1;
-    mkdir -p "${RB_WORKDIR}/temp/src/${name}" || return 1;
-    rmdir "${RB_WORKDIR}/temp/src/${name}" || return 1;
-    tar xf "${RB_REPODIR}/sources/${name}"* -C "${RB_WORKDIR}/build/${name%%/*}/" || return 1;
+    mkdir -p "${RB_WORKDIR}/temp/src/${name}" || return 2;
+    rmdir "${RB_WORKDIR}/temp/src/${name}" &> /dev/null || return 1;
+    tar xf "${RB_REPODIR}/sources/${name}"-[0-9]*.src.tar.gz -C "${RB_WORKDIR}/temp/src/${name%%/*}/" || return 2;
+    return 0;
+}
+
+function pack_source()
+{
+    name=$1;
+    mkdir -p "${RB_WORKDIR}/temp/pkg/${name}" || return 1;
+    rmdir "${RB_WORKDIR}/temp/pkg/${name}" &> /dev/null || return 1;
+    cd "${RB_WORKDIR}/temp/src/${name}";
+    rb_makepkg -Af --source;
+    mv *.src.* "${RB_WORKDIR}/temp/pkg/${name%%/*}/" || return 1;
     return 0;
 }
 
@@ -283,7 +350,7 @@ function check_build()
 function run()
 {
     src="$1";
-    program="${*:2}"
+    program="${*:2}";
     if [[ ${RB_AUTOBUILD_VERBOSE} == 1 ]]; then
         ${program};
     else
@@ -308,10 +375,10 @@ function ask_continue()
     done;
 
     if [[ ${response} = "c" ]]; then
-        return 1;
+        return 0;
     fi;
 
-    return 0;
+    return 1;
 }
 
 function ask_copy()
@@ -389,7 +456,7 @@ function download_sources()
     rm -f "${RB_WORKDIR}/temp/src/${src}/build.log";
     run ${src} cd "${RB_WORKDIR}/temp/src/${src}" || return 1;
     run ${src} rb_clean || return 1;
-    run ${src} rb_makepkg --verifysource || return 1;
+    run ${src} rb_makepkg --verifysource -c || return 1;
     run ${src} rm -rf src || return 1;
     run ${src} rm -rf pkg || return 1;
     return 0;
@@ -491,7 +558,8 @@ RB_AUTOBUILD_PACKAGES=(
 'core/systemd'
 'core/dbus'
 'alarm/uboot-mkimage'
-'core/linux-raspi'
+'core/linux-raspi-3.13'
+'core/linux-raspimc-3.13'
 'community/chrpath'
 'core/iptables'
 'core/iproute2'

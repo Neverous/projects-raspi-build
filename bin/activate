@@ -1,8 +1,8 @@
 #!/bin/bash
 
-DIR=`readlink -f $0`
-DIR=`dirname $DIR`
-. $DIR/../config/host.conf
-export PATH=$DIR:${RB_WORKDIR}/host/bin:${RB_READYDIR}/bin:$PATH
+BINDIR=`readlink -f $0`
+BINDIR=`dirname $BINDIR`
+. $BINDIR/../config/host.conf
+export PATH=$BINDIR:${RB_WORKDIR}/host/bin:${RB_READYDIR}/bin:$PATH
 
 echo "Raspi-build activated"
