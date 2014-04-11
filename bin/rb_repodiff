@@ -1,10 +1,11 @@
 #!/bin/sh
+diff="diff -tEZbBw"
 
 echo "ABS vs ALARM"
-diff ${RB_ABSDIR}/$1 ${RB_ALARMDIR}/$1
+$diff ${RB_ABSDIR}/$1 ${RB_ALARMDIR}/$1
 
 echo "ABS vs REPO"
-diff ${RB_ABSDIR}/$1 ${RB_WORKDIR}/temp/src/$1
+$diff ${RB_ABSDIR}/$1 ${RB_WORKDIR}/temp/src/$1
 
 echo "ALARM vs REPO"
-diff ${RB_WORKDIR}/temp/src/$1 ${RB_ALARMDIR}/$1
+$diff ${RB_WORKDIR}/temp/src/$1 ${RB_ALARMDIR}/$1

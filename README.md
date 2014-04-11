@@ -53,7 +53,7 @@ Well, I started this "project" when there only was armv5 image from [Arch Linux 
 
 * Adjust sysroot created by crosstool-NG
     * move `${RB_TARGETDIR}/lib` to `${RB_TARGETDIR}/usr/lib` and symlink(`ln -s`) `lib` to `usr/lib` - its default on Arch Linux
-    * move `${RB_TARGETDIR}/sbin` to `${RB_TARGETDIR}/usr/bin` and symlink(`ln -s`) `sbin` to `usr/bin` - its default on Arch Linux
+    * move `${RB_TARGETDIR}/sbin` to `${RB_TARGETDIR}/usr/bin` and symlink(`ln -s`) `sbin` to `usr/bin` - its default on Arch Linux, same with `${RB_TARGETDIR}/usr/sbin`
     * copy `${RB_READYDIR}/${RB_TARGET_HOST}/lib/*` to `${RB_TARGETDIR}/usr/lib` - missing c++ libraries
     * create `${RB_TARGETDIR}/var/lib/pacman/` directory
     * change permissions in `${RB_TARGETDIR}/*` to `root:root` `755` (recursive)
